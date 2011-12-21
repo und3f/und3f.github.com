@@ -1,5 +1,5 @@
 body {
-    font: 20px times, "Times New Roman", times-roman, serif;
+    font: 20px/30px 'Poly',serif;
     background: url('images/noise_pattern.png') repeat;
     margin: 0;
     color: #515151;
@@ -24,7 +24,6 @@ body {
     text-decoration: underline;
     margin-bottom: 10px;
     color: #515151;
-    margin-bottom: 0;
     font-size: 32px;
 }
 
@@ -41,7 +40,6 @@ body {
 }
 
 #contacts li {
-    margin-bottom: 5px;
 }
 
 .contact-key {
@@ -49,7 +47,7 @@ body {
 
 .contact-data {
     position: absolute;
-    left: 112px;
+    left: 116px;
 
     color: #515151;
     font-style: italic;
@@ -57,10 +55,4 @@ body {
 
 .contact-data a {
     text-decoration: underline;
-}
-
-.email-sep {
-    font-style: italic;
-    display: inline;
-    color: #ddd;
 }
