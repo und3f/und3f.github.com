@@ -1,27 +1,66 @@
 body {
-    font: 16px times, "Times New Roman", times-roman, serif;
+    font: 20px times, "Times New Roman", times-roman, serif;
     background: url('images/noise_pattern.png') repeat;
     margin: 0;
+    color: #515151;
 }
 
-#content {
+#card {
     margin: 20px auto 0px 20px;
     background-color: #fff;
-    padding: 5px;
-    box-shadow: 0 2px 2px #BBBBBB;
-    width: 300px;
+    padding: 5px 0 0 20px;
+    box-shadow: 0 3px 3px #aaaaaa;
+    width: 85.60mm;
+    height: 53.98mm;
 }
 
-h1 {
+#head {
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+#head h1 {
     margin: 0;
     text-decoration: underline;
     margin-bottom: 10px;
     color: #515151;
+    margin-bottom: 0;
+    font-size: 32px;
 }
 
-a {
-    text-decoration: none;
+#description {
+    color: #cccccc;
+    margin-left: 20px;
+    font-style: italic;
 }
 
-#body {
+#contacts {
+    list-style: none;
+    padding-left: 0;
+    margin-top: 30px;
+}
+
+#contacts li {
+    margin-bottom: 5px;
+}
+
+.contact-key {
+}
+
+.contact-data {
+    position: absolute;
+    left: 112px;
+
+    color: #515151;
+    font-style: italic;
+}
+
+.contact-data a {
+    text-decoration: underline;
+}
+
+.email-sep {
+    font-style: italic;
+    display: inline;
+    color: #ddd;
 }
