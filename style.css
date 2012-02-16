@@ -5,6 +5,21 @@ body {
     color: #515151;
 }
 
+h1 {
+    margin: 0;
+    text-decoration: underline;
+    color: #515151;
+    font-size: 32px;
+}
+
+a {
+    text-decoration: underline;
+    color: #515151;
+    font-style: italic;
+}
+
+/* Main page */
+
 #card {
     margin: 20px auto 0px 20px;
     background-color: #fff;
@@ -18,13 +33,6 @@ body {
     margin-bottom: 10px;
     font-weight: bold;
     text-shadow: 0 1px 0 #999;
-}
-
-#head h1 {
-    margin: 0;
-    text-decoration: underline;
-    color: #515151;
-    font-size: 32px;
 }
 
 #description {
@@ -48,11 +56,16 @@ body {
 .contact-data {
     position: absolute;
     left: 116px;
-
     color: #515151;
     font-style: italic;
 }
 
-.contact-data a {
-    text-decoration: underline;
+/* slides */
+.slide-item {
+    margin-top: 1em;
+}
+
+.slide-item a {
+    padding-left: 1.5em;
+    display: block;
 }
