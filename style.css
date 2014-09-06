@@ -26,7 +26,8 @@ a {
     padding: 5px 0 0 20px;
     box-shadow: 0 3px 3px #aaaaaa;
     width: 85.60mm;
-    height: 60.98mm;
+    /* bigger and bigger */
+    height: 68.98mm;
 }
 
 #head {
