@@ -13,7 +13,7 @@ var rectanglas = [
 ];
 
 function find_dimension_error(dimension, d) {
-    var error = dimension[0] / (d[0]/d[1]) - 1;
+    var error = 1 - dimension[0] / (d[0]/d[1]);
     return error;
 }
 
