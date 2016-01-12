@@ -1,5 +1,6 @@
 var rectanglas = [
     [1, 'квадрат'],
+    [1.25, '1 и 1/4 квадрата'],
     [1.5, 'полтора квадрата'],
     [Math.sqrt(2), '√2'],
     [Math.sqrt(3), '√3'],
@@ -8,8 +9,7 @@ var rectanglas = [
     [(1 + Math.sqrt(2)), 'серебрянный'],
     [(1 + Math.sqrt(5)) / 2, 'золотой'],
     [11/10, '11x10'],
-    [6/5, '6x5'],
-    [1.25, '1 и 1/4 квадрата']
+    [6/5, '6x5']
 ];
 
 function find_dimension_error(dimension, d) {
@@ -18,7 +18,7 @@ function find_dimension_error(dimension, d) {
 }
 
 function size2dimension(w,h) {
-    var d = [w,h].sort(function(a,b) {b > a});
+    var d = [w,h].sort(function(a,b) {return b - a});
 
     var rectangle = rectanglas[0];
     var error = find_dimension_error(rectanglas[0], d);
