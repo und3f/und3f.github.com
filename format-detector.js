@@ -69,6 +69,12 @@ function process_image_file(image_file) {
         URL.revokeObjectURL(this.src);
     }
 
-    i.name=image_file.name;
+    var matched = /^(.+)\.\w+$/.exec(image_file.name);
+    if (matched) {
+        i.name = matched[1]
+    } else {
+        i.name = image_file.name
+    }
+
     i.src=URL.createObjectURL(image_file);
 }
