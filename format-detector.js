@@ -61,7 +61,6 @@ FormatFinderOriginal.prototype.error2string = function(error_num) {
 
 var FormatFinderIntelligent = function () {
     this.bases = [
-        [1, '1'],
         [Math.sqrt(2), '√2'],
         [Math.sqrt(3), '√3'],
         [Math.sqrt(4), '√4'],
@@ -80,10 +79,13 @@ FormatFinderIntelligent.prototype.find = function(art_dimensions) {
     var d = art_dimensions.sort(function(a,b) {return b - a});
     var dp = d[0]/d[1];
 
-    var base = this.bases[0];
+    var squares = Math.floor(dp);
+    if (squares == 2)
+        squares = 1;
+    var base = [squares, squares.toString()];
     var scale_error = this.find_base_error(base, dp);
 
-    for (var i = 1; i < this.bases.length; i++) {
+    for (var i = 0; i < this.bases.length; i++) {
         var test_base = this.bases[i];
         var test_se   = (this.find_base_error(test_base, dp));
 
