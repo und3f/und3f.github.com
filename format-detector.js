@@ -14,34 +14,37 @@
     provided you include this license notice and a URL through which
     recipients can access the Corresponding Source. */
 
-var rectanglas = [
-    [1, 'квадрат'],
-    [1.25, '1 и 1/4 квадрата'],
-    [1.5, 'полтора квадрата'],
-    [Math.sqrt(2), '√2'],
-    [Math.sqrt(3), '√3'],
-    [Math.sqrt(4), '√4'],
-    [Math.sqrt(5), '√5'],
-    [(1 + Math.sqrt(2)), 'серебрянный'],
-    [(1 + Math.sqrt(5)) / 2, 'золотой'],
-    [11/10, '11x10'],
-    [6/5, '6x5']
-];
+var FormatFinderOriginal = function() {
+    this.rectanglas = [
+        [0, ''],
+        [1, 'квадрат'],
+        [1.25, '1 и 1/4 квадрата'],
+        [1.5, 'полтора квадрата'],
+        [Math.sqrt(2), '√2'],
+        [Math.sqrt(3), '√3'],
+        [Math.sqrt(4), '√4'],
+        [Math.sqrt(5), '√5'],
+        [(1 + Math.sqrt(2)), 'серебрянный'],
+        [(1 + Math.sqrt(5)) / 2, 'золотой'],
+        [11/10, '11x10'],
+        [6/5, '6x5']
+    ];
+}
 
-function find_dimension_error(dimension, d) {
+FormatFinderOriginal.prototype.find_dimension_error = function (dimension, d) {
     var error = 1 - dimension[0] / (d[0]/d[1]);
     return error;
 }
 
-function size2dimension(w,h) {
-    var d = [w,h].sort(function(a,b) {return b - a});
+FormatFinderOriginal.prototype.find = function (art_dimensions) {
+    var d = art_dimensions.sort(function(a,b) {return b - a});
 
-    var rectangle = rectanglas[0];
-    var error = find_dimension_error(rectanglas[0], d);
+    var rectangle = this.rectanglas[0];
+    var error = this.find_dimension_error(rectangle, d);
 
-    for (var i = 1; i < rectanglas.length; i++) {
-        var test_rectangle = rectanglas[i];
-        var test_error = find_dimension_error(test_rectangle, d);
+    for (var i = 1; i < this.rectanglas.length; i++) {
+        var test_rectangle = this.rectanglas[i];
+        var test_error = this.find_dimension_error(test_rectangle, d);
         if (Math.abs(test_error) < Math.abs(error)) {
             error = test_error;
             rectangle = test_rectangle;
@@ -54,7 +57,7 @@ function size2dimension(w,h) {
 }
 
 function show_dimension(name,w,h) {
-    var r = size2dimension(w,h);
+    var r = new FormatFinderOriginal().find([w,h]);
 
     document.getElementById('art-name').textContent = name;
     document.getElementById('art-dimension').textContent = r[0];
