@@ -6,9 +6,14 @@
   </head>
   <body>
     <p>
-      Загрузите произведение искусства:<br/>
-      <input type="file" accept="image/*"
-                onchange="process_image_file(this.files[0])">
+      <label for="art-file">Загрузите произведение искусства:</label><br/>
+      <input id="art-file" type="file" accept="image/*"
+            onchange="process_image_file()"><br/>
+      <label for="algorithm">Алгоритм</label>
+      <select name="algorithm" id="algorithm" onchange="process_image_file()">
+        <option value="intelligent">Интеллектуальный</option>
+        <option value="original">Классический</option>
+      </select>
     </p>
 
     <p>

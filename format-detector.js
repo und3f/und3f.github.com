@@ -161,14 +161,20 @@ FormatFinderIntelligent.prototype.find_base_scale_error = function (base, scale,
 }
 
 function show_dimension(name,w,h) {
-    var r = new FormatFinderIntelligent().find([w,h]);
+    var algo = new FormatFinderIntelligent();
+    var algo_name = document.getElementById('algorithm').value;
+    if (algo_name === "original")
+        algo = new FormatFinderOriginal();
+
+    var r = algo.find([w,h]);
 
     document.getElementById('art-name').textContent = name;
     document.getElementById('art-dimension').textContent = r[0];
     document.getElementById('art-dimension-error').textContent = r[1];
 }
 
-function process_image_file(image_file) {
+function process_image_file() {
+    var image_file = document.getElementById('art-file').files[0];
     var i = new Image();
 
     i.onload = function(){
