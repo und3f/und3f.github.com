@@ -61,10 +61,11 @@ FormatFinderOriginal.prototype.error2string = function(error_num) {
 
 var FormatFinderIntelligent = function () {
     this.bases = [
-        [Math.sqrt(2), '√2'],
-        [Math.sqrt(3), '√3'],
-        [Math.sqrt(4), '√4'],
-        [Math.sqrt(5), '√5'],
+        [Math.sqrt(5)/2, '√5/2'],
+        [Math.sqrt(2),   '√2'],
+        [Math.sqrt(3),   '√3'],
+        [Math.sqrt(4),   '√4'],
+        [Math.sqrt(5),   '√5'],
     ];
 
     this.scales = [
