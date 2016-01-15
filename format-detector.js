@@ -198,6 +198,44 @@ FormatFinderIntelligentExtraBasesAccuracy = function() {
 FormatFinderIntelligentExtraBasesAccuracy.prototype = Object.create(FormatFinderIntelligentExtraAccuracy.prototype);
 FormatFinderIntelligentExtraBasesAccuracy.prototype.constructor = FormatFinderIntelligentExtraAccuracy;
 
+FormatFinderSquare = function() {
+    this.scales = [2, 3, 4, 5];
+}
+
+FormatFinderSquare.prototype = Object.create(FormatFinderIntelligent.prototype);
+FormatFinderSquare.prototype.constructor = FormatFinderIntelligent;
+
+FormatFinderSquare.prototype.find = function(art_dimensions) {
+    var d = art_dimensions.sort(function(a,b) {return b - a});
+    var dp = d[0]/d[1];
+
+    var base = this.firstBase(dp);
+    var scale_error = this.find_base_error(base, dp);
+
+    var name = base[1];
+    name += this.scale2string(scale_error[1][0], scale_error[1][1]);
+
+    return [name, this.error2string(scale_error[0])]
+}
+
+FormatFinderSquareExtraAccuracy = function() {
+    FormatFinderSquare.call(this);
+    this.scales.push(6, 9, 10);
+    console.log(this.scales);
+}
+
+FormatFinderSquareExtraAccuracy.prototype = Object.create(FormatFinderSquare.prototype);
+FormatFinderSquareExtraAccuracy.prototype.constructor = FormatFinderSquare;
+
+FormatFinderNumber = function() {
+}
+
+FormatFinderNumber.prototype.find = function(art_dimensions) {
+    var d = art_dimensions.sort(function(a,b) {return b - a});
+    var dp = d[0]/d[1];
+    return [dp, '—'];
+}
+
 function show_dimension(name,w,h) {
     var algo;
     var algo_name = document.getElementById('algorithm').value;
@@ -213,6 +251,15 @@ function show_dimension(name,w,h) {
             break;
         case "intelligent-extrabasesaccuracy":
             algo = new FormatFinderIntelligentExtraBasesAccuracy();
+            break;
+        case "square":
+            algo = new FormatFinderSquare();
+            break;
+        case "square-extraaccuracy":
+            algo = new FormatFinderSquareExtraAccuracy();
+            break;
+        case "number":
+            algo = new FormatFinderNumber();
             break;
         case "intelligent":
         default:

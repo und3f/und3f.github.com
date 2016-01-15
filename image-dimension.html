@@ -1,9 +1,26 @@
 <!doctype html>
 <html>
   <head>
+    <title>Определить формат изображения</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
     <script src="format-detector.js" ></script>
+    <meta name="author" content="Sergey Zasenko">
+    <base target="_blank">
+    <script type="text/javascript">
+
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-28744394-1']);
+      _gaq.push(['_setDomainName', 'und3f.com']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+       var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+       ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+       var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+       })();
+
+     </script>
   </head>
   <body>
     <p>
@@ -14,9 +31,12 @@
       <select name="algorithm" id="algorithm" onchange="process_image_file()">
         <option value="intelligent">Интеллектуальный</option>
         <option value="original">Классический</option>
-        <option value="intelligent-sqrt4">Интеллектуальный √4</option>
         <option value="intelligent-extraaccuracy">Архимед</option>
         <option value="intelligent-extrabasesaccuracy">Декарт</option>
+        <option value="square">Квадрат</option>
+        <option value="square-extraaccuracy">Квадрат+</option>
+        <option value="intelligent-sqrt4">Интеллектуальный √4</option>
+        <option value="number">Число</option>
       </select>
     </p>
 
