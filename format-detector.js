@@ -68,7 +68,7 @@ var FormatFinderIntelligent = function () {
     ];
 
     this.scales = [
-        1, 2, 4
+        1, 2, 3, 4
     ];
 }
 
@@ -179,7 +179,7 @@ FormatFinderIntelligentSqrt4.prototype.firstBase = function(dp) {
 
 FormatFinderIntelligentExtraAccuracy = function() {
     FormatFinderIntelligent.call(this);
-    this.scales.push(5, 8, 10);
+    this.scales.push(5, 8, 9, 10);
 }
 
 FormatFinderIntelligentExtraAccuracy.prototype = Object.create(FormatFinderIntelligent.prototype);
