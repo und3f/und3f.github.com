@@ -64,7 +64,6 @@ var FormatFinderIntelligent = function () {
         [Math.sqrt(5)/2, '√5/2'],
         [Math.sqrt(2),   '√2'],
         [Math.sqrt(3),   '√3'],
-        [Math.sqrt(4),   '√4'],
         [Math.sqrt(5),   '√5'],
     ];
 
@@ -80,10 +79,7 @@ FormatFinderIntelligent.prototype.find = function(art_dimensions) {
     var d = art_dimensions.sort(function(a,b) {return b - a});
     var dp = d[0]/d[1];
 
-    var squares = Math.floor(dp);
-    if (squares == 2)
-        squares = 1;
-    var base = [squares, squares.toString()];
+    var base = this.firstBase(dp);
     var scale_error = this.find_base_error(base, dp);
 
     for (var i = 0; i < this.bases.length; i++) {
@@ -104,6 +100,11 @@ FormatFinderIntelligent.prototype.find = function(art_dimensions) {
     name += this.scale2string(scale_error[1][0], scale_error[1][1]);
 
     return [name, this.error2string(scale_error[0])]
+}
+
+FormatFinderIntelligent.prototype.firstBase = function(dp) {
+    var squares = Math.round(dp);
+    return [squares, squares.toString()]
 }
 
 FormatFinderIntelligent.prototype.scale2string = function(multiplier, scale) {
@@ -161,12 +162,62 @@ FormatFinderIntelligent.prototype.find_base_scale_error = function (base, scale,
     return [1-total/dp,[scale_multiplier, scale]]
 }
 
-function show_dimension(name,w,h) {
-    var algo = new FormatFinderIntelligent();
-    var algo_name = document.getElementById('algorithm').value;
-    if (algo_name === "original")
-        algo = new FormatFinderOriginal();
+FormatFinderIntelligentSqrt4 = function() {
+    FormatFinderIntelligent.call(this);
+    this.bases.push([Math.sqrt(4), '√4']);
+}
 
+FormatFinderIntelligentSqrt4.prototype = Object.create(FormatFinderIntelligent.prototype);
+FormatFinderIntelligent.prototype.constructor = FormatFinderIntelligent;
+
+FormatFinderIntelligentSqrt4.prototype.firstBase = function(dp) {
+    var squares = Math.round(dp);
+    if (squares == 2)
+        squares = 1;
+    return [squares, squares.toString()]
+}
+
+FormatFinderIntelligentExtraAccuracy = function() {
+    FormatFinderIntelligent.call(this);
+    this.scales.push(5, 8, 10);
+}
+
+FormatFinderIntelligentExtraAccuracy.prototype = Object.create(FormatFinderIntelligent.prototype);
+FormatFinderIntelligentExtraAccuracy.prototype.constructor = FormatFinderIntelligentExtraAccuracy;
+
+FormatFinderIntelligentExtraBasesAccuracy = function() {
+    FormatFinderIntelligentExtraAccuracy.call(this);
+    for (var i = 6; i <= 20; i++) {
+        var sqrt = Math.sqrt(i);
+        if (sqrt*sqrt == i)
+            continue;
+        this.bases.push([sqrt, '√' + i]);
+    }
+}
+
+FormatFinderIntelligentExtraBasesAccuracy.prototype = Object.create(FormatFinderIntelligentExtraAccuracy.prototype);
+FormatFinderIntelligentExtraBasesAccuracy.prototype.constructor = FormatFinderIntelligentExtraAccuracy;
+
+function show_dimension(name,w,h) {
+    var algo;
+    var algo_name = document.getElementById('algorithm').value;
+    switch (algo_name) {
+        case "original":
+            algo = new FormatFinderOriginal();
+            break;
+        case "intelligent-sqrt4":
+            algo = new FormatFinderIntelligentSqrt4();
+            break;
+        case "intelligent-extraaccuracy":
+            algo = new FormatFinderIntelligentExtraAccuracy();
+            break;
+        case "intelligent-extrabasesaccuracy":
+            algo = new FormatFinderIntelligentExtraBasesAccuracy();
+            break;
+        case "intelligent":
+        default:
+            algo = new FormatFinderIntelligent();
+    }
     var r = algo.find([w,h]);
 
     document.getElementById('art-name').textContent = name;
