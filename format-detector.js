@@ -304,14 +304,16 @@ function show_dimension(name,image) {
     document.getElementById('art-dimension-error').textContent = art_info[1];
 
     var ruler = new RulerDrawer(document.getElementById('art-ruler'),image);
-    //var marks = algo.getMarksInArea(ruler.getRulerArea());
+
+    ruler.drawMark(art_info[2], "F");
+    var area = ruler.getRulerArea();
+    //var marks = algo.getMarksInArea(area);
     // Default marks
     for (var i = Math.max(1, Math.ceil(area[0])); i <= Math.floor(area[1]); i++) {
         if (i == art_info[2])
             continue;
-        this.drawMark(i, i.toString());
+        ruler.drawMark(i, i.toString());
     }
-    ruler.drawMark(art_info[2], "F");
 }
 
 function RulerDrawer(canvas, image, offset) {
@@ -475,14 +477,12 @@ RulerDrawer.prototype.drawMark = function(abs_position, label, opposite) {
     if (this.horizontal) {
         var abs_pos = position * this.isize[0];
         var x = this.geometry.start[0] + abs_pos;
-        console.log(position, label, x);
         c.moveTo(x, this.ruler_margin-1);
         c.lineTo(x, this.iposition[1] + this.isize[1] + 1);
         c.textAlign = 'left';
 
         c.textBaseline = opposite ? 'hanging' : 'bottom';
         var text_y = !opposite ? this.ruler_margin - 3 : this.iposition[1] + this.isize[1] + 3;
-        console.log(label, c.baseLine, text_y);
         c.fillText(label, x, text_y);
     } else {
         var abs_pos = position * this.isize[1];
