@@ -18,6 +18,7 @@ var FormatFinderOriginal = function() {
     this.bases = [
         [0, ''],
         [1, 'квадрат'],
+        [1+1/3, '1 и 1/3 квадрата'],
         [1.25, '1 и 1/4 квадрата'],
         [1.5, 'полтора квадрата'],
         [Math.sqrt(2), '√2'],
@@ -240,6 +241,10 @@ FormatFinderReal.prototype.find = function(art_dimensions) {
     ]
 }
 
+FormatFinderOriginal.prototype.getMarksInArea = function(area) {
+    return [];
+}
+
 FormatFinderRealExtraAccuracy = function() {
     FormatFinderReal.call(this);
     this.scales.push(6, 9, 10);
@@ -255,6 +260,10 @@ FormatFinderNumber.prototype.find = function(art_dimensions) {
     var d = art_dimensions.sort(function(a,b) {return b - a});
     var dp = d[0]/d[1];
     return [dp, '—', dp];
+}
+
+FormatFinderNumber.prototype.getMarksInArea = function(area) {
+    return [];
 }
 
 function show_dimension(name,image) {
