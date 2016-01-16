@@ -425,7 +425,7 @@ RulerDrawer.prototype.drawRuler = function() {
 
     this.drawMark(0, "0");
     var area = this.getRulerArea();
-    for (var i = Math.ceil(area[0]); i < Math.floor(area[1]); i++)
+    for (var i = Math.max(1, Math.ceil(area[0])); i <= Math.floor(area[1]); i++)
         this.drawMark(i, i.toString());
     this.drawMark(0, "1", true);
 }
@@ -456,7 +456,7 @@ RulerDrawer.prototype.getRulerArea = function() {
     var i = this.horizontal ? 0 : 1;
     return [
         this.offset,
-        this.offset + this.dp * (this.geometry.end[i] - this.geometry.start[i])];
+        this.offset + (this.geometry.end[i] - this.geometry.start[i]) / this.isize[(i+1)%2]];
 }
 
 RulerDrawer.prototype.drawMark = function(abs_position, label, opposite) {
