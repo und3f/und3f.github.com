@@ -21,6 +21,14 @@
        })();
 
      </script>
+     <style>
+       #art-study-container {
+         width: 30em;
+       }
+
+       #art-ruler {
+       }
+     </style>
   </head>
   <body>
     <p>
@@ -41,9 +49,15 @@
     </p>
 
     <p>
-      <span id="art-name"></span><br/>
-      Формат: <span id="art-dimension"></span><br/>
-      Погрешность: <span id="art-dimension-error"></span>
+      <div id="art-study-container">
+        <span id="art-name"></span><br/>
+        Формат: <span id="art-dimension"></span><br/>
+        Погрешность: <span id="art-dimension-error"></span>
+        <br/>
+        <canvas id="art-ruler" width="300" height="300">
+          Ваш браузер не поддерживается
+        </canvas>
+      </div>
     </p>
   </body>
 </html>

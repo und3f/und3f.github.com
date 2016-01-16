@@ -15,7 +15,7 @@
     recipients can access the Corresponding Source. */
 
 var FormatFinderOriginal = function() {
-    this.rectanglas = [
+    this.bases = [
         [0, ''],
         [1, 'квадрат'],
         [1.25, '1 и 1/4 квадрата'],
@@ -39,11 +39,11 @@ FormatFinderOriginal.prototype.find_dimension_error = function (dimension, d) {
 FormatFinderOriginal.prototype.find = function (art_dimensions) {
     var d = art_dimensions.sort(function(a,b) {return b - a});
 
-    var rectangle = this.rectanglas[0];
+    var rectangle = this.bases[0];
     var error = this.find_dimension_error(rectangle, d);
 
-    for (var i = 1; i < this.rectanglas.length; i++) {
-        var test_rectangle = this.rectanglas[i];
+    for (var i = 1; i < this.bases.length; i++) {
+        var test_rectangle = this.bases[i];
         var test_error = this.find_dimension_error(test_rectangle, d);
         if (Math.abs(test_error) < Math.abs(error)) {
             error = test_error;
@@ -51,12 +51,21 @@ FormatFinderOriginal.prototype.find = function (art_dimensions) {
         }
     }
 
-    return [rectangle[1], this.error2string(error)];
+    return [rectangle[1], this.error2string(error), rectangle[0]];
 }
 
 FormatFinderOriginal.prototype.error2string = function(error_num) {
     var error = (Math.round(error_num * 1000.0))/10.0;
     return error + "%";
+}
+
+FormatFinderOriginal.prototype.getMarksInArea = function(area) {
+    var marks = [];
+    this.bases.forEach(function(base) {
+        if (base[0] >= area[0] && base[0] <= area[1])
+            marks.push(base);
+    });
+    return marks;
 }
 
 var FormatFinderIntelligent = function () {
@@ -99,7 +108,10 @@ FormatFinderIntelligent.prototype.find = function(art_dimensions) {
     var name = base[1];
     name += this.scale2string(scale_error[1][0], scale_error[1][1]);
 
-    return [name, this.error2string(scale_error[0])]
+    return [name,
+           this.error2string(scale_error[0]),
+           this.calc_base_scale_number(base, scale_error)
+    ];
 }
 
 FormatFinderIntelligent.prototype.firstBase = function(dp) {
@@ -146,6 +158,13 @@ FormatFinderIntelligent.prototype.find_base_error = function (base, dp) {
     }
 
     return scale_error;
+}
+
+FormatFinderIntelligent.prototype.calc_base_scale_number = function (base, scale) {
+    var total = base[0];
+    if (scale[1][0])
+        total += scale[1][0]/scale[1][1];
+    return total;
 }
 
 FormatFinderIntelligent.prototype.find_base_scale_error = function (base, scale, dp) {
@@ -215,7 +234,10 @@ FormatFinderReal.prototype.find = function(art_dimensions) {
     var name = base[1];
     name += this.scale2string(scale_error[1][0], scale_error[1][1]);
 
-    return [name, this.error2string(scale_error[0])]
+    return [name,
+           this.error2string(scale_error[0]),
+           this.calc_base_scale_number(base, scale_error)
+    ]
 }
 
 FormatFinderRealExtraAccuracy = function() {
@@ -232,10 +254,12 @@ FormatFinderNumber = function() {
 FormatFinderNumber.prototype.find = function(art_dimensions) {
     var d = art_dimensions.sort(function(a,b) {return b - a});
     var dp = d[0]/d[1];
-    return [dp, '—'];
+    return [dp, '—', dp];
 }
 
-function show_dimension(name,w,h) {
+function show_dimension(name,image) {
+    var w = image.width;
+    var h = image.height;
     var algo;
     var algo_name = document.getElementById('algorithm').value;
     switch (algo_name) {
@@ -264,11 +288,200 @@ function show_dimension(name,w,h) {
         default:
             algo = new FormatFinderIntelligent();
     }
-    var r = algo.find([w,h]);
+    var art_info = algo.find([w,h]);
 
     document.getElementById('art-name').textContent = name;
-    document.getElementById('art-dimension').textContent = r[0];
-    document.getElementById('art-dimension-error').textContent = r[1];
+    document.getElementById('art-dimension').textContent = art_info[0];
+    document.getElementById('art-dimension-error').textContent = art_info[1];
+
+    var ruler = new RulerDrawer(document.getElementById('art-ruler'),image);
+    //var marks = algo.getMarksInArea(ruler.getRulerArea());
+    ruler.drawMark(art_info[2], "F");
+}
+
+function RulerDrawer(canvas, image, offset) {
+    this.canvas  = canvas;
+    this.ruler_margin = 15;
+
+    this.geometry = {
+        start: [0, 0],
+        end:   [this.canvas.width, this.canvas.height]
+    };
+    this.context = this.canvas.getContext("2d");
+    this.clearCanvas();
+
+    this.offset = (offset == null) ? 0 : offset;
+
+    this.drawImage(image);
+}
+
+RulerDrawer.prototype.drawImage = function (image) {
+    var context = this.context;
+    var size_on_canvas = this.isize = this.findSizeOnCanvas(image);
+
+    this.horizontal = size_on_canvas[0] > size_on_canvas[1];
+
+    var position_on_cavas = [];
+    var p = this.horizontal ? 1 : 0;
+    position_on_cavas[p] = this.ruler_margin;
+    p = (p+1)%2;
+    position_on_cavas[p] = this.geometry.start[p];
+
+    this.iposition = position_on_cavas;
+
+    this.dp = this.horizontal ? 
+        image.width / image.height
+        : image.height / image.width;
+
+    this.fillImageEmptyArea();
+
+    var offset_item = this.horizontal ? 0 : 1
+    this.offset += (this.dp * position_on_cavas[offset_item]/size_on_canvas[offset_item]);
+
+    context.drawImage(
+            image,
+            position_on_cavas[0],
+            position_on_cavas[1],
+            size_on_canvas[0],
+            size_on_canvas[1]);
+    this.drawRuler(position_on_cavas, size_on_canvas);
+}
+
+RulerDrawer.prototype.clearCanvas = function() {
+    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+}
+
+RulerDrawer.prototype.fillImageEmptyArea = function() {
+    var iposition = this.iposition;
+    var isize = this.isize;
+
+    var size = 3;
+    var colors = ["#ffffff", "#cecece"];
+
+    var y  = iposition[1];
+    var my = iposition[1] + isize[1];
+    if (!this.horizontal) {
+        y = this.geometry.start[1];
+        my = this.geometry.end[1];
+    }
+
+    var color = 0;
+    for (; y < my; y += size, color++) {
+        var x  = iposition[0];
+        var mx = iposition[0] + isize[0];
+        if (this.horizontal) {
+            x = this.geometry.start[0];
+            mx = this.geometry.end[0];
+        }
+        var xcolor = color;
+        for (; x < mx; x += size) {
+            this.context.fillStyle=colors[xcolor++ % colors.length];
+            this.context.fillRect(
+                    x,
+                    y,
+                    Math.min(size, mx-x),
+                    Math.min(size, my-y)
+                    ); 
+        }
+    }
+}
+
+RulerDrawer.prototype.drawRuler = function() {
+    var isize = this.isize;
+    var iposition = this.iposition;
+    var context = this.context;
+    var r = this.ruler_margin;
+
+    var rw = context.lineWidth = 1;
+    context.beginPath();
+    var start = this.geometry.start;
+    var end = this.geometry.end;
+    if (this.horizontal) {
+        var ri = [iposition[1]-rw, iposition[1]+isize[1]+rw];
+        context.moveTo(start[0], ri[0]);
+        context.lineTo(end[0], ri[0]);
+        context.moveTo(start[0], ri[1]);
+        context.lineTo(end[0], ri[1]);
+    } else {
+        var ri = [iposition[0]-rw, iposition[0]+isize[0]+rw];
+        context.moveTo(ri[0], start[1]);
+        context.lineTo(ri[0], end[1]);
+        context.moveTo(ri[1], start[1]);
+        context.lineTo(ri[1], end[1]);
+    }
+
+    context.strokeStyle = '#ff0000';
+    context.stroke();
+    context.closePath();
+
+    this.drawMark(0, "0");
+    this.drawMark(0, "1", true);
+}
+
+RulerDrawer.prototype.findSizeOnCanvas = function(image) {
+    var rotate = image.width < image.height;
+    var d = [image.width, image.height];
+    var dc = [this.canvas.width-this.ruler_margin*2, this.canvas.height-this.ruler_margin*2];
+    if (rotate) {
+        d = d.reverse();
+        dc = dc.reverse();
+    }
+
+    var newd = [];
+    newd[0] = Math.min(d[0], dc[0]);
+    newd[1] = Math.round(newd[0]/d[0] * d[1]);
+    if (newd[1] > dc[1]) {
+        newd[0] = Math.round(dc[1]/d[1] * d[0]);
+        newd[1] = dc[1];
+    };
+
+    if (rotate)
+        newd.reverse();
+    return newd;
+}
+
+RulerDrawer.prototype.getRulerArea = function() {
+    var i = this.horizontal ? 0 : 1;
+    return [
+        this.offset,
+        this.offset + this.dp * (this.geometry.end[i] - this.geometry.start[i])];
+}
+
+RulerDrawer.prototype.drawMark = function(abs_position, label, opposite) {
+    var position = abs_position/this.dp+this.offset
+    var c = this.context;
+    if (opposite == null)
+        opposite = false;
+
+    c.font = "10px Verdana";
+    c.fillStyle = 'black';
+    c.beginPath();
+    if (this.horizontal) {
+        var abs_pos = position * this.isize[0];
+        var x = this.geometry.start[0] + abs_pos;
+        console.log(position, label, x);
+        c.moveTo(x, this.ruler_margin-1);
+        c.lineTo(x, this.iposition[1] + this.isize[1] + 1);
+        c.textAlign = 'left';
+
+        c.textBaseline = opposite ? 'hanging' : 'bottom';
+        var text_y = !opposite ? this.ruler_margin - 3 : this.iposition[1] + this.isize[1] + 3;
+        console.log(label, c.baseLine, text_y);
+        c.fillText(label, x, text_y);
+    } else {
+        var abs_pos = position * this.isize[1];
+        var y = this.geometry.start[1] + abs_pos;
+        c.moveTo(this.ruler_margin-1, y);
+        c.lineTo(this.iposition[0] + this.isize[0] + 1, y);
+        c.textBaseline = 'top';
+
+        c.textAlign = opposite ? 'left' : 'right';
+        var text_x = !opposite ? this.ruler_margin - 3 : this.iposition[0] + this.isize[0] + 3;
+        c.fillText(label, text_x, y);
+    }
+    c.strokeStyle = '#ff0000';
+    c.stroke();
+    c.closePath();
 }
 
 function process_image_file() {
@@ -276,7 +489,7 @@ function process_image_file() {
     var i = new Image();
 
     i.onload = function(){
-        show_dimension(this.name, this.width, this.height);
+        show_dimension(this.name, this);
         URL.revokeObjectURL(this.src);
     }
 
