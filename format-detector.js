@@ -424,6 +424,9 @@ RulerDrawer.prototype.drawRuler = function() {
     context.closePath();
 
     this.drawMark(0, "0");
+    var area = this.getRulerArea();
+    for (var i = Math.ceil(area[0]); i < Math.floor(area[1]); i++)
+        this.drawMark(i, i.toString());
     this.drawMark(0, "1", true);
 }
 
