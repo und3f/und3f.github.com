@@ -198,14 +198,14 @@ FormatFinderIntelligentExtraBasesAccuracy = function() {
 FormatFinderIntelligentExtraBasesAccuracy.prototype = Object.create(FormatFinderIntelligentExtraAccuracy.prototype);
 FormatFinderIntelligentExtraBasesAccuracy.prototype.constructor = FormatFinderIntelligentExtraAccuracy;
 
-FormatFinderSquare = function() {
+FormatFinderReal = function() {
     this.scales = [2, 3, 4, 5];
 }
 
-FormatFinderSquare.prototype = Object.create(FormatFinderIntelligent.prototype);
-FormatFinderSquare.prototype.constructor = FormatFinderIntelligent;
+FormatFinderReal.prototype = Object.create(FormatFinderIntelligent.prototype);
+FormatFinderReal.prototype.constructor= FormatFinderIntelligent;
 
-FormatFinderSquare.prototype.find = function(art_dimensions) {
+FormatFinderReal.prototype.find = function(art_dimensions) {
     var d = art_dimensions.sort(function(a,b) {return b - a});
     var dp = d[0]/d[1];
 
@@ -218,14 +218,13 @@ FormatFinderSquare.prototype.find = function(art_dimensions) {
     return [name, this.error2string(scale_error[0])]
 }
 
-FormatFinderSquareExtraAccuracy = function() {
-    FormatFinderSquare.call(this);
+FormatFinderRealExtraAccuracy = function() {
+    FormatFinderReal.call(this);
     this.scales.push(6, 9, 10);
-    console.log(this.scales);
 }
 
-FormatFinderSquareExtraAccuracy.prototype = Object.create(FormatFinderSquare.prototype);
-FormatFinderSquareExtraAccuracy.prototype.constructor = FormatFinderSquare;
+FormatFinderRealExtraAccuracy.prototype = Object.create(FormatFinderReal.prototype);
+FormatFinderRealExtraAccuracy.prototype.constructor = FormatFinderReal;
 
 FormatFinderNumber = function() {
 }
@@ -252,11 +251,11 @@ function show_dimension(name,w,h) {
         case "intelligent-extrabasesaccuracy":
             algo = new FormatFinderIntelligentExtraBasesAccuracy();
             break;
-        case "square":
-            algo = new FormatFinderSquare();
+        case "real":
+            algo = new FormatFinderReal();
             break;
-        case "square-extraaccuracy":
-            algo = new FormatFinderSquareExtraAccuracy();
+        case "real-extraaccuracy":
+            algo = new FormatFinderRealExtraAccuracy();
             break;
         case "number":
             algo = new FormatFinderNumber();
