@@ -305,6 +305,12 @@ function show_dimension(name,image) {
 
     var ruler = new RulerDrawer(document.getElementById('art-ruler'),image);
     //var marks = algo.getMarksInArea(ruler.getRulerArea());
+    // Default marks
+    for (var i = Math.max(1, Math.ceil(area[0])); i <= Math.floor(area[1]); i++) {
+        if (i == art_info[2])
+            continue;
+        this.drawMark(i, i.toString());
+    }
     ruler.drawMark(art_info[2], "F");
 }
 
@@ -425,8 +431,6 @@ RulerDrawer.prototype.drawRuler = function() {
 
     this.drawMark(0, "0");
     var area = this.getRulerArea();
-    for (var i = Math.max(1, Math.ceil(area[0])); i <= Math.floor(area[1]); i++)
-        this.drawMark(i, i.toString());
     this.drawMark(0, "1", true);
 }
 
