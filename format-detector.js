@@ -111,7 +111,8 @@ FormatFinderIntelligent.prototype.find = function(art_dimensions) {
 
     return [name,
            this.error2string(scale_error[0]),
-           this.calc_base_scale_number(base, scale_error)
+           this.calc_base_scale_number(base, scale_error),
+           [base, scale_error]
     ];
 }
 
@@ -182,6 +183,40 @@ FormatFinderIntelligent.prototype.find_base_scale_error = function (base, scale,
     return [1-total/dp,[scale_multiplier, scale]]
 }
 
+FormatFinderIntelligent.prototype.getMarksInArea = function(area, art_info) {
+    var marks = FormatFinderOriginal.prototype.getMarksInArea.call(this, area);
+    if (art_info == null || art_info.length < 4)
+        return marks;
+
+    var scale = art_info[3][1][1];
+    if (scale[0] == 0)
+        return marks;
+
+    var whole = Math.floor(area[0]);
+    var i     = Math.floor((area[0]-whole) * scale[1]);
+    var total = whole + i / scale[1];
+    do {
+        if (total > area[0]) {
+            var name = "";
+            if (whole > 0) {
+                name += whole + " ";
+            }
+            if (i > 0) {
+                name += i + "/" + scale[1];
+            }
+            marks.push([total, name]);
+        }
+        i++;
+        if (i >= scale[1]) {
+            i -= scale[1];
+            whole ++;
+        }
+        total = whole + i / scale[1];
+    } while (total <= area[1])
+
+    return marks;
+}
+
 FormatFinderIntelligentSqrt4 = function() {
     FormatFinderIntelligent.call(this);
     this.bases.push([Math.sqrt(4), '√4']);
@@ -219,6 +254,7 @@ FormatFinderIntelligentExtraBasesAccuracy.prototype = Object.create(FormatFinder
 FormatFinderIntelligentExtraBasesAccuracy.prototype.constructor = FormatFinderIntelligentExtraAccuracy;
 
 FormatFinderReal = function() {
+    this.bases  = [];
     this.scales = [2, 3, 4, 5];
 }
 
@@ -237,12 +273,9 @@ FormatFinderReal.prototype.find = function(art_dimensions) {
 
     return [name,
            this.error2string(scale_error[0]),
-           this.calc_base_scale_number(base, scale_error)
+           this.calc_base_scale_number(base, scale_error),
+           [base, scale_error]
     ]
-}
-
-FormatFinderOriginal.prototype.getMarksInArea = function(area) {
-    return [];
 }
 
 FormatFinderRealExtraAccuracy = function() {
@@ -307,13 +340,20 @@ function show_dimension(name,image) {
 
     ruler.drawMark(art_info[2], "F");
     var area = ruler.getRulerArea();
-    //var marks = algo.getMarksInArea(area);
     // Default marks
     for (var i = Math.max(1, Math.ceil(area[0])); i <= Math.floor(area[1]); i++) {
         if (i == art_info[2])
             continue;
         ruler.drawMark(i, i.toString());
     }
+    
+
+    var marks = algo.getMarksInArea(area, art_info);
+    console.log(marks);
+    marks.forEach(function(mark) {
+        ruler.drawMark(mark[0], mark[1]);
+    });
+
 }
 
 function RulerDrawer(canvas, image, offset) {
@@ -328,6 +368,7 @@ function RulerDrawer(canvas, image, offset) {
     this.clearCanvas();
 
     this.offset = (offset == null) ? 0 : offset;
+    this.marks  = [];
 
     this.drawImage(image);
 }
@@ -337,6 +378,9 @@ RulerDrawer.prototype.drawImage = function (image) {
     var size_on_canvas = this.isize = this.findSizeOnCanvas(image);
 
     this.horizontal = size_on_canvas[0] > size_on_canvas[1];
+    if (! this.horizontal)
+        this.ruler_margin = 30;
+    this.last_mark_pos = false;
 
     var position_on_cavas = [];
     var p = this.horizontal ? 1 : 0;
@@ -431,7 +475,7 @@ RulerDrawer.prototype.drawRuler = function() {
     context.stroke();
     context.closePath();
 
-    this.drawMark(0, "0");
+    this.drawMark(0, "0", false);
     var area = this.getRulerArea();
     this.drawMark(0, "1", true);
 }
@@ -466,14 +510,22 @@ RulerDrawer.prototype.getRulerArea = function() {
 }
 
 RulerDrawer.prototype.drawMark = function(abs_position, label, opposite) {
+    if (this.marks.find(function(m){return m[0] == abs_position}))
+        return;
+    this.marks.push([abs_position, label]);
+    console.log(this.marks)
+
     var position = abs_position/this.dp+this.offset
     var c = this.context;
-    if (opposite == null)
-        opposite = false;
+    if (opposite == null) {
+        opposite = this.last_mark_pos;
+        this.last_mark_pos = !this.last_mark_pos;
+    }
 
     c.font = "10px Verdana";
     c.fillStyle = 'black';
     c.beginPath();
+
     if (this.horizontal) {
         var abs_pos = position * this.isize[0];
         var x = this.geometry.start[0] + abs_pos;
@@ -498,6 +550,8 @@ RulerDrawer.prototype.drawMark = function(abs_position, label, opposite) {
     c.strokeStyle = '#ff0000';
     c.stroke();
     c.closePath();
+
+    return true;
 }
 
 function process_image_file() {
