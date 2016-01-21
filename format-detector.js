@@ -708,7 +708,6 @@ ImageAnalyzer.prototype.registerTriggerGridRotate = function(grid_rotate_elem) {
 
 ImageAnalyzer.prototype.rotateGrid = function() {
     this.grid_direction = (this.grid_direction + 1) % this.grid_directions.length;
-    console.log(this.grid_direction);
     this.redrawImage();
 }
 
