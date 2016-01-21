@@ -612,6 +612,7 @@ RulerDrawer.prototype._drawGridLine = function(axis, length, reverse) {
 function ImageAnalyzer(args) {
     this.name_elem = args["name"];
     this.format_elem = args["format"];
+    this.error_elem = args["error"];
     this.canvas = args["canvas"];
     this.grid_direction = 0;
 
@@ -660,7 +661,8 @@ ImageAnalyzer.prototype.changeImage = function(image, name) {
     this.clearImage();
 
     this.image = image;
-    this.name_elem.textContent = name;
+    if (this.name_elem)
+        this.name_elem.textContent = name;
     this.analyzeImage();
 }
 
@@ -702,7 +704,6 @@ ImageAnalyzer.prototype.registerTriggerGridRotate = function(grid_rotate_elem) {
     var that = this;
     grid_rotate_elem.onclick = function() {
         that.rotateGrid();
-        //grid_rotate_elem.value = that.grid_direction;
     }
 }
 
@@ -720,6 +721,8 @@ ImageAnalyzer.prototype.analyzeImage = function() {
     this.art_info = this.algo.find([w,h]);
 
     this.format_elem.textContent = this.art_info[0];
+    if (this.error_elem)
+        this.error_elem.textContent  = this.art_info[1];
     this.redrawImage();
 }
 
