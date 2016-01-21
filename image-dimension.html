@@ -36,15 +36,24 @@
         <option value="intelligent-sqrt4">Инженерный √4</option>
         <option value="number">Число</option>
       </select>
+      <br/>
       <label for="guides">Направляющие:</label>
+      <select name="guides" id="guides" onchange="process_image_file()">
+        <option value="halfs">прогрессия 1/2</option>
+        <option value="trills">прогрессия 1/3</option>
+        <option value="golden">золотое сечение</option>
+        <option value="silver">серебрянное сечение</option>
+      </select>
     </p>
 
     <p>
       <div id="art-study-container">
         <span id="art-name"></span><br/>
         Формат: <span id="art-dimension"></span><br/>
+        <!--
         Погрешность: <span id="art-dimension-error"></span>
         <br/>
+        -->
         <canvas id="art-ruler" width="300" height="300">
           Ваш браузер не поддерживается
         </canvas>
