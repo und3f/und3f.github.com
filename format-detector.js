@@ -323,86 +323,82 @@ function formatFinderFactory(name) {
     };
 }
 
-function show_dimension(name,image) {
-    var w = image.width;
-    var h = image.height;
-    var algo_name = document.getElementById('algorithm').value;
-    var algo = formatFinderFactory(algo_name);
-
-    var art_info = algo.find([w,h]);
-
-    document.getElementById('art-name').textContent = name;
-    document.getElementById('art-dimension').textContent = art_info[0];
-    // document.getElementById('art-dimension-error').textContent = art_info[1];
-
-    var ruler = new RulerDrawer(document.getElementById('art-ruler'),image);
-    ruler.drawRuler(art_info[2]);
-
-    /*
-    ruler.drawMark(art_info[2], "F");
-    var area = ruler.getRulerArea();
-    // Default marks
-    for (var i = Math.max(1, Math.ceil(area[0])); i <= Math.floor(area[1]); i++) {
-        if (i == art_info[2])
-            continue;
-        ruler.drawMark(i, i.toString());
+function GridFactory(name) {
+    switch (name) {
+        case "halfs":
+            return SplitHalfs;
+        case "trills":
+            return SplitTrills;
+        case "golden":
+            return SplitGolden;
+        case "silver":
+            return SplitSilver;
     }
-    
-    var marks = algo.getMarksInArea(area, art_info);
-    marks.forEach(function(mark) {
-        ruler.drawMark(mark[0], mark[1]);
-    });
-    */
-
+    return;
 }
 
-function RulerDrawer(canvas, image, offset) {
+function SplitHalfs(length) {
+    return length / 2;
+}
+
+function SplitTrills(length) {
+    return length / 3;
+}
+
+function SplitGolden(length) {
+    return length - length * (Math.sqrt(5) - 1) / 2;
+}
+
+function SplitSilver(length) {
+    return length * (Math.sqrt(2) - 1);
+}
+
+function RulerDrawer(canvas, image) {
     this.canvas  = canvas;
-    this.ruler_margin = 15;
+    this.ruler_margin = 1;
 
     this.geometry = {
         start: [0, 0],
         end:   [this.canvas.width, this.canvas.height]
     };
     this.context = this.canvas.getContext("2d");
-    this.clearCanvas();
-
-    this.offset = (offset == null) ? 0 : offset;
     this.marks  = [];
 
-    this.drawImage(image);
-}
+    this.image  = image;
 
-RulerDrawer.prototype.drawImage = function (image) {
-    var context = this.context;
-    var size_on_canvas = this.isize = this.findSizeOnCanvas(image);
-
-    this.horizontal = size_on_canvas[0] > size_on_canvas[1];
-
-    var axis = this.horizontal ? 0 : 1;
-    var opposite_axis = (axis + 1) % 2;
-
-    var position_on_cavas = [];
-    position_on_cavas[axis] = this.geometry.start[axis] + 1;
-    position_on_cavas[opposite_axis] = this.ruler_margin
-
-    this.iposition = position_on_cavas;
-
+    this.horizontal = image.width > image.height;
     this.dp = this.horizontal ? 
         image.width / image.height
         : image.height / image.width;
 
-    // this.fillImageEmptyArea();
+}
 
-    var offset_item = this.horizontal ? 0 : 1
-    this.offset += (this.dp * position_on_cavas[offset_item]/size_on_canvas[offset_item]);
+RulerDrawer.prototype.calcImagePosition = function(ruler_format) {
+    var image = this.image;
+    var size_on_canvas = this.isize = this.findSizeOnCanvas(ruler_format);
 
+    var axis = this.horizontal ? 0 : 1;
+    var opposite_axis = (axis + 1) % 2;
+
+    var position_on_cavas = [this.ruler_margin, this.ruler_margin];
+
+    this.iposition = position_on_cavas;
+}
+
+RulerDrawer.prototype.drawImage = function(ruler_format) {
+    if (ruler_format == null || ruler_format < this.dp) 
+        ruler_format = this.dp;
+
+    this.calcImagePosition(ruler_format);
+
+    var context = this.context;
+    this.clearCanvas();
     context.drawImage(
-            image,
-            position_on_cavas[0],
-            position_on_cavas[1],
-            size_on_canvas[0],
-            size_on_canvas[1]);
+            this.image,
+            this.iposition[0],
+            this.iposition[1],
+            this.isize[0],
+            this.isize[1]);
 }
 
 RulerDrawer.prototype.clearCanvas = function() {
@@ -453,6 +449,8 @@ RulerDrawer.prototype.drawRuler = function(format) {
     var context = this.context;
     var r = this.ruler_margin;
 
+    // this.fillImageEmptyArea();
+
     var rw = context.lineWidth = 1;
     context.beginPath();
     var start = this.geometry.start;
@@ -460,10 +458,13 @@ RulerDrawer.prototype.drawRuler = function(format) {
 
     var axis = this.horizontal ? 0 : 1;
     var opposite_axis = (axis + 1) % 2;
-    var ri = [iposition[opposite_axis]-rw, iposition[opposite_axis]+isize[opposite_axis]+rw];
-    var izero = iposition[axis];
-    var iend  = end[axis];
-    var fposition = iposition[axis] + format * isize[opposite_axis];
+    var ri        = [
+        Math.round(iposition[opposite_axis]-rw),
+        Math.round(iposition[opposite_axis]+isize[opposite_axis]+rw)
+    ];
+    var izero     = Math.round(iposition[axis]);
+    var iend      = Math.round(end[axis]);
+    var fposition = Math.round(iposition[axis] + format * isize[opposite_axis]);
 
     var dots = [
         [fposition,  ri[1]],
@@ -488,38 +489,36 @@ RulerDrawer.prototype.drawRuler = function(format) {
     context.stroke();
     context.closePath();
 
+    /*
     this.drawMark(0, "0", false);
     this.drawMark(format, "F", false);
     this.drawMark(0, "1", true);
+    */
 }
 
-RulerDrawer.prototype.findSizeOnCanvas = function(image) {
-    var rotate = image.width < image.height;
-    var d = [image.width, image.height];
-    var dc = [this.canvas.width-this.ruler_margin*2, this.canvas.height-this.ruler_margin*2];
-    if (rotate) {
-        d = d.reverse();
-        dc = dc.reverse();
-    }
+RulerDrawer.prototype.findSizeOnCanvas = function(ruler_format) {
+    var axis  = this.horizontal ? 0 : 1;
+    var opposite_axis = (axis+1) % 2;
 
-    var newd = [];
-    newd[0] = Math.min(d[0], dc[0]);
-    newd[1] = Math.round(newd[0]/d[0] * d[1]);
-    if (newd[1] > dc[1]) {
-        newd[0] = Math.round(dc[1]/d[1] * d[0]);
-        newd[1] = dc[1];
-    };
+    var image_space = [
+        this.canvas.width - this.ruler_margin  * 2,
+        this.canvas.height - this.ruler_margin * 2
+    ];
 
-    if (rotate)
-        newd.reverse();
-    return newd;
+    var possible_image_size  = [image_space[axis] / ruler_format, image_space[opposite_axis]];
+
+    var image_size = [];
+    image_size[opposite_axis] = Math.floor(Math.min.apply(Math, possible_image_size));
+    image_size[axis]          = image_size[opposite_axis] * this.dp;
+
+    return image_size;
 }
 
 RulerDrawer.prototype.getRulerArea = function() {
     var i = this.horizontal ? 0 : 1;
     return [
-        this.offset,
-        this.offset + (this.geometry.end[i] - this.geometry.start[i]) / this.isize[(i+1)%2]];
+        0,
+        this.dp]
 }
 
 RulerDrawer.prototype.drawMark = function(rel_position, label, opposite) {
@@ -570,21 +569,170 @@ RulerDrawer.prototype.drawMark = function(rel_position, label, opposite) {
     return true;
 }
 
-function process_image_file() {
-    var image_file = document.getElementById('art-file').files[0];
-    var i = new Image();
+RulerDrawer.prototype.drawGrid = function(split_func, direction) {
+    if (direction == null)
+        direction = [false, false];
 
-    i.onload = function(){
-        show_dimension(this.name, this);
-        URL.revokeObjectURL(this.src);
+    var axis = this.horizontal ? 0 : 1;
+    var opposite_axis = (axis+1) % 2;
+    var c = this.context;
+
+    c.beginPath();
+    for (var i = 0, lengths = this.isize.slice(); i < 4; i++) {
+        lengths.forEach(function(length, i, lengths) {
+            lengths[i] = split_func(length);
+        });
+        [0, 1].forEach(function(axis) {
+            this._drawGridLine(axis, lengths[axis], direction[axis]);
+        }, this)
     }
 
-    var matched = /^(.+)\.\w+$/.exec(image_file.name);
-    if (matched) {
-        i.name = matched[1]
-    } else {
-        i.name = image_file.name
+    c.strokeStyle = 'gold';
+    c.stroke();
+    c.closePath();
+}
+
+RulerDrawer.prototype._drawGridLine = function(axis, length, reverse) {
+    var opposite_axis = (axis + 1) % 2;
+    var c = this.context;
+    var lstart = [], lend = [];
+
+    var axis_pos = ! reverse ? 
+        this.iposition[axis] + length
+        : this.iposition[axis] + this.isize[axis] - length;
+    axis_post = Math.round(axis_pos);
+    lstart[axis] = lend[axis] = axis_pos;
+    lstart[opposite_axis]     = this.iposition[opposite_axis];
+    lend[opposite_axis]       = this.iposition[opposite_axis] + this.isize[opposite_axis];
+
+    c.moveTo.apply(c, lstart);
+    c.lineTo.apply(c, lend);
+}
+
+function ImageAnalyzer(args) {
+    this.name_elem = args["name"];
+    this.format_elem = args["format"];
+    this.canvas = args["canvas"];
+    this.grid_direction = 0;
+
+    this.grid_directions = [
+        [false, false],
+        [true,  false],
+        [true,  true],
+        [false, true]
+    ];
+
+
+    this.registerTriggerImage(args["image"]);
+    this.registerTriggerFormatAlgo(args["algo"]);
+    this.registerTriggerGrid(args["grid"]);
+    this.registerTriggerGridRotate(args["grid-rotate"]);
+}
+
+ImageAnalyzer.prototype.registerTriggerImage = function(file_elem) {
+    var that = this;
+    file_elem.onchange = function() {
+        var image_file = file_elem.files[0];
+        if (image_file == null)
+            return;
+
+        var i = new Image();
+
+        i.onload = function(){
+            that.changeImage(this, this.name);
+            URL.revokeObjectURL(this.src);
+        }
+
+        var matched = /^(.+)\.\w+$/.exec(image_file.name);
+        if (matched) {
+            i.name = matched[1]
+        } else {
+            i.name = image_file.name
+        }
+
+        i.src=URL.createObjectURL(image_file);
     }
 
-    i.src=URL.createObjectURL(image_file);
+    file_elem.onchange();
+}
+
+ImageAnalyzer.prototype.changeImage = function(image, name) {
+    this.clearImage();
+
+    this.image = image;
+    this.name_elem.textContent = name;
+    this.analyzeImage();
+}
+
+ImageAnalyzer.prototype.clearImage = function() {
+    delete this.ruler;
+    delete this.image;
+}
+
+ImageAnalyzer.prototype.registerTriggerFormatAlgo = function(algo_elem) {
+    var that = this;
+
+    algo_elem.onchange = function() {
+        that.changeFormatAnalyzer(algo_elem.value);
+    };
+
+    algo_elem.onchange();
+}
+
+ImageAnalyzer.prototype.changeFormatAnalyzer = function(algo_name) {
+    this.algo = formatFinderFactory(algo_name);
+    this.analyzeImage();
+}
+
+ImageAnalyzer.prototype.registerTriggerGrid = function(grid_elem) {
+    var that = this;
+    grid_elem.onchange = function() {
+        that.changeGrid(grid_elem.value);
+    }
+
+    grid_elem.onchange();
+}
+
+ImageAnalyzer.prototype.changeGrid = function() {
+    this.grid = GridFactory(document.getElementById('grid').value);
+    this.redrawImage();
+}
+
+ImageAnalyzer.prototype.registerTriggerGridRotate = function(grid_rotate_elem) {
+    var that = this;
+    grid_rotate_elem.onclick = function() {
+        that.rotateGrid();
+        //grid_rotate_elem.value = that.grid_direction;
+    }
+}
+
+ImageAnalyzer.prototype.rotateGrid = function() {
+    this.grid_direction = (this.grid_direction + 1) % this.grid_directions.length;
+    console.log(this.grid_direction);
+    this.redrawImage();
+}
+
+ImageAnalyzer.prototype.analyzeImage = function() {
+    if (this.image == null)
+        return
+
+    var w = this.image.width;
+    var h = this.image.height;
+    this.art_info = this.algo.find([w,h]);
+
+    this.format_elem.textContent = this.art_info[0];
+    this.redrawImage();
+}
+
+ImageAnalyzer.prototype.redrawImage = function() {
+    if (this.image == null)
+        return
+
+    if (this.ruler == null) {
+        this.ruler = new RulerDrawer(this.canvas, this.image);
+    }
+
+    this.ruler.drawImage(this.art_info[2]);
+    this.ruler.drawRuler(this.art_info[2]);
+    this.ruler.drawGrid(this.grid, this.grid_directions[this.grid_direction]);
 }

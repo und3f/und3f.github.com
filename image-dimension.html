@@ -23,10 +23,9 @@
   <body>
     <p>
       <label for="art-file">Изображение:</label><br/>
-      <input id="art-file" type="file" accept="image/*"
-            onchange="process_image_file()"><br/>
+      <input id="art-file" type="file" accept="image/*"><br/>
       <label for="algorithm">Анализ формата:</label>
-      <select name="algorithm" id="algorithm" onchange="process_image_file()">
+      <select id="algorithm">
         <option value="intelligent">Инженерный</option>
         <option value="original">Художественный</option>
         <option value="real">Рациональный</option>
@@ -37,13 +36,14 @@
         <option value="number">Число</option>
       </select>
       <br/>
-      <label for="guides">Направляющие:</label>
-      <select name="guides" id="guides" onchange="process_image_file()">
+      <label for="grid">Направляющие:</label>
+      <select id="grid">
         <option value="halfs">прогрессия 1/2</option>
         <option value="trills">прогрессия 1/3</option>
         <option value="golden">золотое сечение</option>
         <option value="silver">серебрянное сечение</option>
       </select>
+      <button id="grid-rotate">&#x27f3;</button>
     </p>
 
     <p>
@@ -59,5 +59,17 @@
         </canvas>
       </div>
     </p>
+    
+    <script>
+      var image_analyzer = new ImageAnalyzer({
+        "image":        document.getElementById('art-file'),
+        "algo":         document.getElementById('algorithm'),
+        "grid":         document.getElementById('grid'),
+        "grid-rotate":  document.getElementById('grid-rotate'),
+        "name":         document.getElementById('art-name'),
+        "format":       document.getElementById('art-dimension'),
+        "canvas":       document.getElementById('art-ruler')
+      });
+    </script>
   </body>
 </html>
