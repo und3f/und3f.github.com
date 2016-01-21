@@ -333,6 +333,12 @@ function GridFactory(name) {
             return SplitGolden;
         case "silver":
             return SplitSilver;
+        case "sqrt2":
+            return SplitSqrt2;
+        case "sqrt3":
+            return SplitSqrt3;
+        case "sqrt5":
+            return SplitSqrt5;
     }
     return;
 }
@@ -351,6 +357,18 @@ function SplitGolden(length) {
 
 function SplitSilver(length) {
     return length * (Math.sqrt(2) - 1);
+}
+
+function SplitSqrt2(length) {
+    return length / Math.sqrt(2);
+}
+
+function SplitSqrt3(length) {
+    return length / Math.sqrt(3);
+}
+
+function SplitSqrt5(length) {
+    return length / Math.sqrt(5);
 }
 
 function RulerDrawer(canvas, image) {
