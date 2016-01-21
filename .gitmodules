@@ -1,3 +1,6 @@
 [submodule "slides"]
 	path = slides
 	url = https://github.com/und3f/slides.git
+[submodule "contrib/font-awesome"]
+	path = contrib/font-awesome
+	url = https://github.com/FortAwesome/Font-Awesome.git
