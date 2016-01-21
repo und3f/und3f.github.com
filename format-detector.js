@@ -33,7 +33,7 @@ var FormatFinderOriginal = function() {
 }
 
 FormatFinderOriginal.prototype.find_dimension_error = function (dimension, d) {
-    var error = 1 - dimension[0] / (d[0]/d[1]);
+    var error = dimension[0] / (d[0]/d[1]) - 1;
     return error;
 }
 
@@ -105,15 +105,20 @@ FormatFinderIntelligent.prototype.find = function(art_dimensions) {
         }
     }
 
-    // At the end
-    var name = base[1];
-    name += this.scale2string(scale_error[1][0], scale_error[1][1]);
-
-    return [name,
+    return [this.nameToString(base, scale_error),
            this.error2string(scale_error[0]),
            this.calc_base_scale_number(base, scale_error),
            [base, scale_error]
     ];
+}
+
+FormatFinderIntelligent.prototype.nameToString = function(base, scale_error) {
+    var name = base[1];
+    if (!isNaN(name) && scale_error[1][0] < 0) {
+        return ( (+name * scale_error[1][1] + scale_error[1][0]) + "/" + scale_error[1][1] );
+    }
+    name += this.scale2string(scale_error[1][0], scale_error[1][1]);
+    return name;
 }
 
 FormatFinderIntelligent.prototype.firstBase = function(dp) {
@@ -180,7 +185,7 @@ FormatFinderIntelligent.prototype.find_base_scale_error = function (base, scale,
     if (total < 1)
         total = 1/total;
 
-    return [1-total/dp,[scale_multiplier, scale]]
+    return [total/dp - 1, [scale_multiplier, scale]]
 }
 
 FormatFinderIntelligent.prototype.getMarksInArea = function(area, art_info) {
@@ -268,10 +273,7 @@ FormatFinderReal.prototype.find = function(art_dimensions) {
     var base = this.firstBase(dp);
     var scale_error = this.find_base_error(base, dp);
 
-    var name = base[1];
-    name += this.scale2string(scale_error[1][0], scale_error[1][1]);
-
-    return [name,
+    return [this.nameToString(base, scale_error),
            this.error2string(scale_error[0]),
            this.calc_base_scale_number(base, scale_error),
            [base, scale_error]
@@ -299,45 +301,44 @@ FormatFinderNumber.prototype.getMarksInArea = function(area) {
     return [];
 }
 
+function formatFinderFactory(name) {
+    switch (name) {
+        case "original":
+            return new FormatFinderOriginal();
+        case "intelligent-sqrt4":
+            return new FormatFinderIntelligentSqrt4();
+        case "intelligent-extraaccuracy":
+            return new FormatFinderIntelligentExtraAccuracy();
+        case "intelligent-extrabasesaccuracy":
+            return new FormatFinderIntelligentExtraBasesAccuracy();
+        case "real":
+            return new FormatFinderReal();
+        case "real-extraaccuracy":
+            return new FormatFinderRealExtraAccuracy();
+        case "number":
+            return new FormatFinderNumber();
+        case "intelligent":
+        default:
+            return new FormatFinderIntelligent();
+    };
+}
+
 function show_dimension(name,image) {
     var w = image.width;
     var h = image.height;
-    var algo;
     var algo_name = document.getElementById('algorithm').value;
-    switch (algo_name) {
-        case "original":
-            algo = new FormatFinderOriginal();
-            break;
-        case "intelligent-sqrt4":
-            algo = new FormatFinderIntelligentSqrt4();
-            break;
-        case "intelligent-extraaccuracy":
-            algo = new FormatFinderIntelligentExtraAccuracy();
-            break;
-        case "intelligent-extrabasesaccuracy":
-            algo = new FormatFinderIntelligentExtraBasesAccuracy();
-            break;
-        case "real":
-            algo = new FormatFinderReal();
-            break;
-        case "real-extraaccuracy":
-            algo = new FormatFinderRealExtraAccuracy();
-            break;
-        case "number":
-            algo = new FormatFinderNumber();
-            break;
-        case "intelligent":
-        default:
-            algo = new FormatFinderIntelligent();
-    }
+    var algo = formatFinderFactory(algo_name);
+
     var art_info = algo.find([w,h]);
 
     document.getElementById('art-name').textContent = name;
     document.getElementById('art-dimension').textContent = art_info[0];
-    document.getElementById('art-dimension-error').textContent = art_info[1];
+    // document.getElementById('art-dimension-error').textContent = art_info[1];
 
     var ruler = new RulerDrawer(document.getElementById('art-ruler'),image);
+    ruler.drawRuler(art_info[2]);
 
+    /*
     ruler.drawMark(art_info[2], "F");
     var area = ruler.getRulerArea();
     // Default marks
@@ -347,12 +348,11 @@ function show_dimension(name,image) {
         ruler.drawMark(i, i.toString());
     }
     
-
     var marks = algo.getMarksInArea(area, art_info);
-    console.log(marks);
     marks.forEach(function(mark) {
         ruler.drawMark(mark[0], mark[1]);
     });
+    */
 
 }
 
@@ -378,15 +378,13 @@ RulerDrawer.prototype.drawImage = function (image) {
     var size_on_canvas = this.isize = this.findSizeOnCanvas(image);
 
     this.horizontal = size_on_canvas[0] > size_on_canvas[1];
-    if (! this.horizontal)
-        this.ruler_margin = 30;
-    this.last_mark_pos = false;
+
+    var axis = this.horizontal ? 0 : 1;
+    var opposite_axis = (axis + 1) % 2;
 
     var position_on_cavas = [];
-    var p = this.horizontal ? 1 : 0;
-    position_on_cavas[p] = this.ruler_margin;
-    p = (p+1)%2;
-    position_on_cavas[p] = this.geometry.start[p];
+    position_on_cavas[axis] = this.geometry.start[axis] + 1;
+    position_on_cavas[opposite_axis] = this.ruler_margin
 
     this.iposition = position_on_cavas;
 
@@ -394,7 +392,7 @@ RulerDrawer.prototype.drawImage = function (image) {
         image.width / image.height
         : image.height / image.width;
 
-    this.fillImageEmptyArea();
+    // this.fillImageEmptyArea();
 
     var offset_item = this.horizontal ? 0 : 1
     this.offset += (this.dp * position_on_cavas[offset_item]/size_on_canvas[offset_item]);
@@ -405,7 +403,6 @@ RulerDrawer.prototype.drawImage = function (image) {
             position_on_cavas[1],
             size_on_canvas[0],
             size_on_canvas[1]);
-    this.drawRuler(position_on_cavas, size_on_canvas);
 }
 
 RulerDrawer.prototype.clearCanvas = function() {
@@ -419,8 +416,8 @@ RulerDrawer.prototype.fillImageEmptyArea = function() {
     var size = 3;
     var colors = ["#ffffff", "#cecece"];
 
-    var y  = iposition[1];
-    var my = iposition[1] + isize[1];
+    var y  = this.geometry.start[1];
+    var my = this.geometry.end[1];
     if (!this.horizontal) {
         y = this.geometry.start[1];
         my = this.geometry.end[1];
@@ -428,8 +425,8 @@ RulerDrawer.prototype.fillImageEmptyArea = function() {
 
     var color = 0;
     for (; y < my; y += size, color++) {
-        var x  = iposition[0];
-        var mx = iposition[0] + isize[0];
+        var x  = this.geometry.start[0];
+        var mx = this.geometry.end[0];
         if (this.horizontal) {
             x = this.geometry.start[0];
             mx = this.geometry.end[0];
@@ -447,7 +444,10 @@ RulerDrawer.prototype.fillImageEmptyArea = function() {
     }
 }
 
-RulerDrawer.prototype.drawRuler = function() {
+RulerDrawer.prototype.drawRuler = function(format) {
+    if (format == null)
+        format = this.dp;
+
     var isize = this.isize;
     var iposition = this.iposition;
     var context = this.context;
@@ -457,26 +457,39 @@ RulerDrawer.prototype.drawRuler = function() {
     context.beginPath();
     var start = this.geometry.start;
     var end = this.geometry.end;
-    if (this.horizontal) {
-        var ri = [iposition[1]-rw, iposition[1]+isize[1]+rw];
-        context.moveTo(start[0], ri[0]);
-        context.lineTo(end[0], ri[0]);
-        context.moveTo(start[0], ri[1]);
-        context.lineTo(end[0], ri[1]);
-    } else {
-        var ri = [iposition[0]-rw, iposition[0]+isize[0]+rw];
-        context.moveTo(ri[0], start[1]);
-        context.lineTo(ri[0], end[1]);
-        context.moveTo(ri[1], start[1]);
-        context.lineTo(ri[1], end[1]);
-    }
+
+    var axis = this.horizontal ? 0 : 1;
+    var opposite_axis = (axis + 1) % 2;
+    var ri = [iposition[opposite_axis]-rw, iposition[opposite_axis]+isize[opposite_axis]+rw];
+    var izero = iposition[axis];
+    var iend  = end[axis];
+    var fposition = iposition[axis] + format * isize[opposite_axis];
+
+    var dots = [
+        [fposition,  ri[1]],
+        [izero, ri[1]],
+        [izero, ri[0]],
+        [fposition, ri[0]]
+    ];
+
+    if (!this.horizontal)
+        dots.forEach(function(dot, i, dots) {
+            dots[i] = dot.reverse();
+        });
+
+    var dot1 = dots.shift();
+    context.moveTo.apply(context, dot1);
+    dots.forEach(function(dot) {
+        context.lineTo.apply(context, dot);
+    });
+    context.lineTo.apply(context, dot1);
 
     context.strokeStyle = '#ff0000';
     context.stroke();
     context.closePath();
 
     this.drawMark(0, "0", false);
-    var area = this.getRulerArea();
+    this.drawMark(format, "F", false);
     this.drawMark(0, "1", true);
 }
 
@@ -509,47 +522,50 @@ RulerDrawer.prototype.getRulerArea = function() {
         this.offset + (this.geometry.end[i] - this.geometry.start[i]) / this.isize[(i+1)%2]];
 }
 
-RulerDrawer.prototype.drawMark = function(abs_position, label, opposite) {
-    if (this.marks.find(function(m){return m[0] == abs_position}))
-        return;
-    this.marks.push([abs_position, label]);
-    console.log(this.marks)
-
-    var position = abs_position/this.dp+this.offset
+RulerDrawer.prototype.drawMark = function(rel_position, label, opposite) {
     var c = this.context;
-    if (opposite == null) {
-        opposite = this.last_mark_pos;
-        this.last_mark_pos = !this.last_mark_pos;
-    }
 
-    c.font = "10px Verdana";
-    c.fillStyle = 'black';
-    c.beginPath();
+    var axis = this.horizontal ? 0 : 1;
+    var opposite_axis = (axis+1) % 2;
+
+    var position = this.iposition[axis] + rel_position * this.isize[opposite_axis];
+    var start_pos = [position, this.iposition[opposite_axis]-1];
+    var end_pos = [position, this.iposition[opposite_axis] + this.isize[opposite_axis]+1];
 
     if (this.horizontal) {
-        var abs_pos = position * this.isize[0];
-        var x = this.geometry.start[0] + abs_pos;
-        c.moveTo(x, this.ruler_margin-1);
-        c.lineTo(x, this.iposition[1] + this.isize[1] + 1);
         c.textAlign = 'left';
-
         c.textBaseline = opposite ? 'hanging' : 'bottom';
-        var text_y = !opposite ? this.ruler_margin - 3 : this.iposition[1] + this.isize[1] + 3;
-        c.fillText(label, x, text_y);
     } else {
-        var abs_pos = position * this.isize[1];
-        var y = this.geometry.start[1] + abs_pos;
-        c.moveTo(this.ruler_margin-1, y);
-        c.lineTo(this.iposition[0] + this.isize[0] + 1, y);
         c.textBaseline = 'top';
-
         c.textAlign = opposite ? 'left' : 'right';
-        var text_x = !opposite ? this.ruler_margin - 3 : this.iposition[0] + this.isize[0] + 3;
-        c.fillText(label, text_x, y);
     }
+
+    var text_pos = [];
+    text_pos[0] = position;
+    text_pos[1] = !opposite ?
+        this.iposition[opposite_axis] - 3 
+        : this.iposition[opposite_axis] + this.isize[opposite_axis] + 3;
+
+    if (!this.horizontal) {
+        start_pos = start_pos.reverse();
+        end_pos   = end_pos.reverse();
+        text_pos  = text_pos.reverse();
+    }
+
+    /*
+    c.beginPath();
+    c.moveTo.apply(c, start_pos);
+    c.lineTo.apply(c, end_pos);
     c.strokeStyle = '#ff0000';
     c.stroke();
     c.closePath();
+    */
+
+    text_pos.unshift(label);
+
+    c.font = "10px Verdana";
+    c.fillStyle = 'black';
+    c.fillText.apply(c, text_pos);
 
     return true;
 }
