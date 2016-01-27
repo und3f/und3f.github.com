@@ -14,21 +14,82 @@
     provided you include this license notice and a URL through which
     recipients can access the Corresponding Source. */
 
+var ImageAspectRatio = function(dimension1, dimension2, horizontal) {
+    if (dimension2 == null) 
+        dimension2 = 1;
+
+    this.dimensions = [dimension1, dimension2];
+
+    this.setOrientation(horizontal);
+}
+
+ImageAspectRatio.prototype.setOrientation = function(horizontal) {
+    if (horizontal == null)
+        horizontal = false;
+
+    this.horizontal = horizontal;
+}
+
+ImageAspectRatio.prototype.width = function() {
+    var i = this.horizontal ? 0 : 1;
+    return this.dimensions[i];
+}
+
+ImageAspectRatio.prototype.height = function() {
+    var i = this.horizontal ? 1 : 0;
+    return this.dimensions[i];
+}
+
+ImageAspectRatio.prototype.toString = function() {
+    return this.height() + ":" + this.width();
+}
+
+function ImageAspectRatioNamed(name, orientation) {
+    this.dimensions = [name, 1];
+}
+
+ImageAspectRatioNamed.prototype = Object.create(ImageAspectRatio.prototype);
+ImageAspectRatioNamed.prototype.constructor = ImageAspectRatio;
+
+ImageAspectRatioNamed.prototype.toString = function() {
+    return this.dimensions[0];
+}
+
+function ImageAspectRatioCoverBrackets(dimension1, dimension2, horizontal) {
+    ImageAspectRatio.call(this, dimension1, dimension2, horizontal);
+}
+
+ImageAspectRatioCoverBrackets.prototype = Object.create(ImageAspectRatio.prototype);
+ImageAspectRatioCoverBrackets.prototype.constructor = ImageAspectRatio;
+
+ImageAspectRatioCoverBrackets.prototype.cover = function(dimension) {
+    if (/[+-]/.test(dimension))
+        return "(" + dimension + ")"
+
+    return dimension;
+}
+
+ImageAspectRatioCoverBrackets.prototype.toString = function() {
+    return this.cover(this.height()) + ":" + this.cover(this.width());
+}
+
+var AR = ImageAspectRatio;
+var ARN = ImageAspectRatioNamed;
+
 var FormatFinderOriginal = function() {
     this.bases = [
-        [0, ''],
-        [1, 'квадрат'],
-        [1+1/3, '1 и 1/3 квадрата'],
-        [1.25, '1 и 1/4 квадрата'],
-        [1.5, 'полтора квадрата'],
-        [Math.sqrt(2), '√2'],
-        [Math.sqrt(3), '√3'],
-        [Math.sqrt(4), '√4'],
-        [Math.sqrt(5), '√5'],
-        [(1 + Math.sqrt(2)), 'серебрянный прямоугольник'],
-        [(1 + Math.sqrt(5)) / 2, 'золотой прямоугольник'],
-        [11/10, '11x10'],
-        [6/5, '6x5']
+        [1, new ARN('квадрат')],
+        [4/3, new AR(4, 3)],
+        [5/4, new AR(5, 4)],
+        [3/2, new AR(3, 2)],
+        [Math.sqrt(2), new AR('√2')],
+        [Math.sqrt(3), new AR('√3')],
+        [Math.sqrt(4), new AR('√4')],
+        [Math.sqrt(5), new AR('√5')],
+        [(1 + Math.sqrt(2)), new ARN('серебрянный прямоугольник')],
+        [(1 + Math.sqrt(5)) / 2, new ARN('золотой прямоугольник')],
+        [11/10, new AR(11, 10)],
+        [6/5, new AR(6, 5)]
     ];
 }
 
@@ -38,7 +99,7 @@ FormatFinderOriginal.prototype.find_dimension_error = function (dimension, d) {
 }
 
 FormatFinderOriginal.prototype.find = function (art_dimensions) {
-    var d = art_dimensions.sort(function(a,b) {return b - a});
+    var d = art_dimensions.slice().sort(function(a,b) {return b - a});
 
     var rectangle = this.bases[0];
     var error = this.find_dimension_error(rectangle, d);
@@ -52,7 +113,9 @@ FormatFinderOriginal.prototype.find = function (art_dimensions) {
         }
     }
 
-    return [rectangle[1], this.error2string(error), rectangle[0]];
+    var ar = rectangle[1];
+    ar.setOrientation(art_dimensions[0] > art_dimensions[1]);
+    return [ar, this.error2string(error), rectangle[0]];
 }
 
 FormatFinderOriginal.prototype.error2string = function(error_num) {
@@ -86,7 +149,7 @@ FormatFinderIntelligent.prototype = Object.create(FormatFinderOriginal.prototype
 FormatFinderIntelligent.prototype.constructor = FormatFinderIntelligent;
 
 FormatFinderIntelligent.prototype.find = function(art_dimensions) {
-    var d = art_dimensions.sort(function(a,b) {return b - a});
+    var d = art_dimensions.slice().sort(function(a,b) {return b - a});
     var dp = d[0]/d[1];
 
     var base = this.firstBase(dp);
@@ -105,20 +168,26 @@ FormatFinderIntelligent.prototype.find = function(art_dimensions) {
         }
     }
 
-    return [this.nameToString(base, scale_error),
+    var name = this.formatName(base, scale_error);
+    name.setOrientation(art_dimensions[0] > art_dimensions[1]);
+
+    return [name,
            this.error2string(scale_error[0]),
            this.calc_base_scale_number(base, scale_error),
            [base, scale_error]
     ];
 }
 
-FormatFinderIntelligent.prototype.nameToString = function(base, scale_error) {
+FormatFinderIntelligent.prototype.formatName = function(base, scale_error) {
     var name = base[1];
-    if (!isNaN(name) && scale_error[1][0] < 0) {
-        return ( (+name * scale_error[1][1] + scale_error[1][0]) + "/" + scale_error[1][1] );
+    if (!isNaN(name) && scale_error[1][0] != 0) {
+        return new ImageAspectRatio(
+                (+name * scale_error[1][1] + scale_error[1][0]),
+                scale_error[1][1]
+                );
     }
     name += this.scale2string(scale_error[1][0], scale_error[1][1]);
-    return name;
+    return new ImageAspectRatioCoverBrackets(name);
 }
 
 FormatFinderIntelligent.prototype.firstBase = function(dp) {
@@ -267,13 +336,16 @@ FormatFinderReal.prototype = Object.create(FormatFinderIntelligent.prototype);
 FormatFinderReal.prototype.constructor= FormatFinderIntelligent;
 
 FormatFinderReal.prototype.find = function(art_dimensions) {
-    var d = art_dimensions.sort(function(a,b) {return b - a});
+    var d = art_dimensions.slice().sort(function(a,b) {return b - a});
     var dp = d[0]/d[1];
 
     var base = this.firstBase(dp);
     var scale_error = this.find_base_error(base, dp);
 
-    return [this.nameToString(base, scale_error),
+    var name = this.formatName(base, scale_error);
+    name.setOrientation(art_dimensions[0] > art_dimensions[1]);
+
+    return [name,
            this.error2string(scale_error[0]),
            this.calc_base_scale_number(base, scale_error),
            [base, scale_error]
@@ -292,9 +364,11 @@ FormatFinderNumber = function() {
 }
 
 FormatFinderNumber.prototype.find = function(art_dimensions) {
-    var d = art_dimensions.sort(function(a,b) {return b - a});
+    var d = art_dimensions.slice().sort(function(a,b) {return b - a});
     var dp = d[0]/d[1];
-    return [dp, '—', dp];
+    var name = new ImageAspectRatio(dp, 1);
+    name.setOrientation(art_dimensions[0] > art_dimensions[1]);
+    return [name, '—', dp];
 }
 
 FormatFinderNumber.prototype.getMarksInArea = function(area) {
