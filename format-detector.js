@@ -89,7 +89,9 @@ var FormatFinderOriginal = function() {
         [(1 + Math.sqrt(2)), new ARN('серебрянный прямоугольник')],
         [(1 + Math.sqrt(5)) / 2, new ARN('золотой прямоугольник')],
         [11/10, new AR(11, 10)],
-        [6/5, new AR(6, 5)]
+        [10/9, new AR(10, 9)],
+        [6/5, new AR(6, 5)],
+        [7/5, new AR(7, 5)]
     ];
 }
 
