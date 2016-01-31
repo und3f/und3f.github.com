@@ -1,0 +1,84 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Тональный анализ композиции</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+    <script src="tonal-analyzer.js" ></script>
+    <meta name="author" content="Sergey Zasenko">
+  </head>
+  <body>
+    <p>
+    <div>
+      <label for="art-file">Изображение:</label><br/>
+      <input id="art-file" type="file" accept="image/*"><br/>
+      <label for="art-display">Отображение:</label>
+      <select id="art-display">
+        <option value="original">Цвет</option>
+        <option value="grayscale">Оттенки серого</option>
+        <option value="analyzed" checked="checked">Свет-полутон-тень</option>
+      </select>
+    </div>
+    </p>
+
+    <p>
+    <div>
+      Свет: <span id="art-light"></span>
+      <br />
+      Полутона: <span id="art-gray"></span>
+      <br />
+      Глубокие тени: <span id="art-dark"></span>
+      <br />
+
+      <canvas id="art-drawer" width="300" height="300">
+        Ваш браузер не поддерживается
+      </canvas>
+    </div>
+    </p>
+  </body>
+
+  <script>
+    var file_elem = document.getElementById("art-file");
+    var canvas    = document.getElementById("art-drawer");
+    var display_elem = document.getElementById("art-display");
+
+    var dark_color = 85;
+    var light_color = 191;
+    var gray_borders = [dark_color, light_color];
+
+    var analyzer;
+
+    var tone_result_elem = [
+      document.getElementById("art-dark"),
+      document.getElementById("art-gray"),
+      document.getElementById("art-light")
+    ];
+
+    display_elem.onchange = 
+      function() {
+        if (analyzer != null)
+          analyzer.analyze(gray_borders, display_elem.value);
+    };
+
+    file_elem.onchange = 
+      function() {
+        var image_file = file_elem.files[0];
+        if (image_file == null)
+            return;
+
+        var i = new Image();
+
+        i.onload = function(){
+          analyzer = new TonalAnalyzer(this, canvas);
+
+          var tone = analyzer.analyze([dark_color, light_color], display_elem.value)
+          for (var i = 0; i < 3; i++)
+            tone_result_elem[i].textContent = Math.round(tone[i] * 100) + "%";
+
+          URL.revokeObjectURL(this.src);
+        }
+
+        i.src=URL.createObjectURL(image_file);
+    }
+    file_elem.onchange();
+  </script>
+</html>
