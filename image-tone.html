@@ -15,12 +15,70 @@
       ga('send', 'pageview');
 
     </script>
+    <style>
+      #range-chooser {
+        width: 12em;
+        height: 1em;
+      }
+
+      .range-chooser-scale {
+        width: 100%;
+      }
+
+      .range-container {
+        position: relative;
+      }
+
+      #scale-ruler-black {
+        position: absolute;
+        top: 0;
+      }
+
+      #scale-ruler-light {
+        position: absolute;
+        bottom: 0;
+      }
+
+      #scale-ruler-black, #scale-ruler-light {
+        height: 1em;
+        margin: 0;
+        border: 0;
+        padding: 0;
+      }
+
+      #scale-ruler {
+        height: 100%;
+        margin-top: 0.5em;
+        margin-bottom: 0.5em;
+      }
+    </style>
   </head>
   <body>
     <p>
     <div>
       <label for="art-file">Изображение:</label><br/>
       <input id="art-file" type="file" accept="image/*"><br/>
+
+      <label for="range-chooser">Границы полутона:</label><br/>
+      <div id="range-chooser">
+        <div class="range-container">
+          <input type="range" id="scale-ruler-black" class="range-chooser-scale" min="1" max="24" value="8" />
+        </div>
+        <svg id="scale-ruler" class="range-chooser-scale">
+          <defs>
+            <linearGradient id="scale" x1="0%" y1="0%" x="100%" y2="0%">
+              <stop offset="0%" style="stop-color:rgb(0, 0, 0);" />
+              <stop offset="100%" style="stop-color:rgb(255, 255, 255);" />
+            </linearGradient>
+          </defs>
+          <rect width="100%" height="100%" style="fill:url(#scale)" />
+        </svg>
+        <div class="range-container">
+          <input type="range" id="scale-ruler-light" class="range-chooser-scale" min="1" max="24" value="16" />
+        </div>
+      </div>
+      <br/>
+
       <label for="art-display">Отображение:</label>
       <select id="art-display">
         <option value="original">Цвет</option>
@@ -51,11 +109,27 @@
     var canvas    = document.getElementById("art-drawer");
     var display_elem = document.getElementById("art-display");
 
-    var dark_color = 85;
-    var light_color = 191;
-    var gray_borders = [dark_color, light_color];
-
     var analyzer;
+
+    var tone_choosers = [
+      document.getElementById("scale-ruler-black"),
+      document.getElementById("scale-ruler-light")
+    ];
+    var tone_scale  = 255 / tone_choosers[0].max;
+
+    var tone_values, gray_borders;
+
+    function redrawImage() {
+      if (analyzer != null)
+        analyzer.analyze(gray_borders, display_elem.value);
+    }
+
+    function updateToneValues() {
+      tone_values = tone_choosers.map(function(e) {return +e.value});
+      gray_borders = tone_values.map(function(v) {return Math.round(v * tone_scale)});
+      redrawImage();
+    }
+    updateToneValues();
 
     var tone_result_elem = [
       document.getElementById("art-dark"),
@@ -65,8 +139,7 @@
 
     display_elem.onchange = 
       function() {
-        if (analyzer != null)
-          analyzer.analyze(gray_borders, display_elem.value);
+        redrawImage();
     };
 
     file_elem.onchange = 
@@ -80,7 +153,7 @@
         i.onload = function(){
           analyzer = new TonalAnalyzer(this, canvas);
 
-          var tone = analyzer.analyze([dark_color, light_color], display_elem.value)
+          var tone = analyzer.analyze(gray_borders, display_elem.value)
           for (var i = 0; i < 3; i++)
             tone_result_elem[i].textContent = Math.round(tone[i] * 100) + "%";
 
@@ -90,5 +163,15 @@
         i.src=URL.createObjectURL(image_file);
     }
     file_elem.onchange();
+
+    var onchooser_change = function(e) {
+      if (+tone_choosers[0].value >= +tone_choosers[1].value) {
+        tone_choosers.forEach(function(e, i) {e.value = tone_values[i]});
+        return;
+      }
+      updateToneValues();
+    };
+
+    tone_choosers[0].oninput = tone_choosers[1].oninput = onchooser_change;
   </script>
 </html>
