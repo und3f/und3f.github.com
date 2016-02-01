@@ -120,8 +120,12 @@
     var tone_values, gray_borders;
 
     function redrawImage() {
-      if (analyzer != null)
-        analyzer.analyze(gray_borders, display_elem.value);
+      if (analyzer == null)
+        return;
+
+      var tone = analyzer.analyze(gray_borders, display_elem.value)
+      for (var i = 0; i < 3; i++)
+        tone_result_elem[i].textContent = Math.round(tone[i] * 100) + "%";
     }
 
     function updateToneValues() {
@@ -153,9 +157,7 @@
         i.onload = function(){
           analyzer = new TonalAnalyzer(this, canvas);
 
-          var tone = analyzer.analyze(gray_borders, display_elem.value)
-          for (var i = 0; i < 3; i++)
-            tone_result_elem[i].textContent = Math.round(tone[i] * 100) + "%";
+          redrawImage();
 
           URL.revokeObjectURL(this.src);
         }
