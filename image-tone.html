@@ -210,15 +210,15 @@
     }
     file_elem.onchange();
 
-    var onchooser_change = function(e) {
+    var onchooser_input = function(e) {
       if (+tone_choosers[0].value >= +tone_choosers[1].value) {
         tone_choosers.forEach(function(e, i) {e.value = tone_values[i]});
         return;
       }
-      updateToneValues();
     };
 
-    tone_choosers[0].oninput = tone_choosers[1].oninput = onchooser_change;
+    tone_choosers[0].oninput = tone_choosers[1].oninput = onchooser_input;
+    tone_choosers[0].onchange = tone_choosers[1].onchange = updateToneValues;
 
     window.addEventListener('resize', function() {
       if (analyzer == null)
