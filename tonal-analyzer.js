@@ -38,10 +38,9 @@ TonalAnalyzer.prototype.init = function() {
         this.image.width / this.image.height
         : this.image.height / this.image.width;
 
-    var min_size_em  = 12;
-    var min_dm = [min_size_em, min_size_em / this.dp];
-    if (! this.horizontal)
-        min_dm = min_dm.reverse();
+    var min_dm    = new Array(2);
+    min_dm[0] = 11;
+    min_dm[1] = this.horizontal ? min_dm[0]/this.dp : min_dm[0]*this.dp;
     this.canvas.style.minWidth = min_dm[0] + "em";
     this.canvas.style.minHeight = min_dm[1] + "em";
 
