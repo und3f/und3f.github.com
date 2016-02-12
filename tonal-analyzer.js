@@ -38,11 +38,12 @@ TonalAnalyzer.prototype.init = function() {
         this.image.width / this.image.height
         : this.image.height / this.image.width;
 
-    var min_size  = 100;
-    this.min_size = new Array(2);
-    this.min_size[this.opposite_axis] = min_size / this.dp;
-    this.min_size[this.axis] = Math.round(min_size);
-    console.log(this.min_size, this.dp);
+    var min_size_em  = 12;
+    var min_dm = [min_size_em, min_size_em / this.dp];
+    if (! this.horizontal)
+        min_dm = min_dm.reverse();
+    this.canvas.style.minWidth = min_dm[0] + "em";
+    this.canvas.style.minHeight = min_dm[1] + "em";
 
     this.resize();
 
@@ -68,10 +69,6 @@ TonalAnalyzer.prototype.adjustCanvas = function() {
             parent_el.offsetHeight - this.ruler_margin*2
             ]);
     var c_size = image_size[0] < free_size[0] ? image_size : free_size;
-
-    if (c_size[0] < this.min_size[0] || c_size[1] < this.min_size[1]) {
-        c_size = this.min_size;
-    }
 
     this.canvas.width = image_size[0];
     this.canvas.height = image_size[1];
