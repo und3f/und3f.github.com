@@ -34,38 +34,68 @@ TonalAnalyzer.prototype.init = function() {
         [255, 255, 255]
     ];
 
+    this.min_size = 100;
+
     this.dp = this.horizontal ? 
         this.image.width / this.image.height
         : this.image.height / this.image.width;
 
-    this.isize     = this.findSizeOnCanvas();
-    this.iposition = this.calcImagePosition();
+    this.resize();
 
     this.context   = this.canvas.getContext("2d");
 }
 
-TonalAnalyzer.prototype.findSizeOnCanvas = function() {
+TonalAnalyzer.prototype.resize = function() {
+    this.adjustCanvas();
+    this.isize     = this.findSizeOnCanvas();
+    this.iposition = this.calcImagePosition();
+}
+
+TonalAnalyzer.prototype.adjustCanvas = function() {
+    canvas.width = 1;
+    canvas.height = 1;
+    canvas.style.width = null;
+    canvas.style.height = null;
+
+    var image_size = [this.image.width, this.image.height];
+    var parent_el  = this.canvas.parentNode;
+    var free_size  = this.findSizeOnFrame([
+            parent_el.offsetWidth - this.ruler_margin,
+            parent_el.offsetHeight - this.ruler_margin
+            ]);
+
+    var c_size = image_size[0] < free_size[0] ? image_size : free_size;
+
+    this.canvas.width = image_size[0];
+    this.canvas.height = image_size[1];
+    this.canvas.style.width = c_size[0];
+    this.canvas.style.height = c_size[1];
+}
+
+TonalAnalyzer.prototype.findSizeOnFrame = function(frame) {
     var axis  = this.axis
     var opposite_axis = this.opposite_axis;
 
-    var image_space = [
-        this.canvas.width - this.ruler_margin  * 2,
-        this.canvas.height - this.ruler_margin * 2
-    ];
-
-    var possible_image_size  = [image_space[axis] / this.dp, image_space[opposite_axis]];
+    var possible_image_size  = [frame[axis] / this.dp, frame[opposite_axis]];
 
     var image_size = [];
     image_size[opposite_axis] = Math.floor(Math.min.apply(Math, possible_image_size));
-    image_size[axis]          = image_size[opposite_axis] * this.dp;
+    image_size[axis]          = Math.floor(image_size[opposite_axis] * this.dp);
 
     return image_size;
+}
+
+TonalAnalyzer.prototype.findSizeOnCanvas = function() {
+    return this.findSizeOnFrame([
+        this.canvas.width,
+        this.canvas.height
+    ]);
 }
 
 TonalAnalyzer.prototype.calcImagePosition = function() {
     var image = this.image;
 
-    var position_on_cavas = [this.ruler_margin, this.ruler_margin];
+    var position_on_cavas = [0, 0];
 
     return position_on_cavas;
 }

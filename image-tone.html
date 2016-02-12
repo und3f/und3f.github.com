@@ -51,57 +51,93 @@
         margin-top: 0.5em;
         margin-bottom: 0.5em;
       }
+
+      html, body, #container {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+      }
+
+      .block-container {
+        margin: 0.6em;
+      }
+
+      #container {
+        display: table;
+      }
+
+      .cell {
+        display: table-row;
+      }
+
+      #art-file {
+        width: 100%;
+      }
+
+      #art-drawer-container {
+        height: 100%;
+        width: 100%;
+      }
+
+      #art-drawer {
+        margin-left: auto;
+        margin-right: auto;
+        display: block;
+      }
+
     </style>
   </head>
   <body>
-    <p>
-    <div>
-      <label for="art-file">Изображение:</label><br/>
-      <input id="art-file" type="file" accept="image/*"><br/>
+    <div id="container">
+      <div class="cell">
+        <div id="art-control-container" class="block-container">
+          <label for="art-file">Изображение:</label><br/>
+          <input id="art-file" type="file" accept="image/*"><br/>
 
-      <label for="range-chooser">Границы полутона:</label><br/>
-      <div id="range-chooser">
-        <div class="range-container">
-          <input type="range" id="scale-ruler-black" class="range-chooser-scale" min="1" max="24" value="8" />
+          <label for="range-chooser">Границы полутона:</label><br/>
+          <div id="range-chooser">
+            <div class="range-container">
+              <input type="range" id="scale-ruler-black" class="range-chooser-scale" min="1" max="24" value="8" />
+            </div>
+            <svg id="scale-ruler" class="range-chooser-scale">
+              <defs>
+                <linearGradient id="scale" x1="0%" y1="0%" x="100%" y2="0%">
+                  <stop offset="0%" style="stop-color:rgb(0, 0, 0);" />
+                  <stop offset="100%" style="stop-color:rgb(255, 255, 255);" />
+                </linearGradient>
+              </defs>
+              <rect width="100%" height="100%" style="fill:url(#scale)" />
+            </svg>
+            <div class="range-container">
+              <input type="range" id="scale-ruler-light" class="range-chooser-scale" min="1" max="24" value="16" />
+            </div>
+          </div>
+          <br/>
+
+          <label for="art-display">Отображение:</label>
+          <select id="art-display">
+            <option value="original">Цвет</option>
+            <option value="grayscale">Оттенки серого</option>
+            <option value="analyzed" selected="selected">Свет-полутон-тень</option>
+          </select>
         </div>
-        <svg id="scale-ruler" class="range-chooser-scale">
-          <defs>
-            <linearGradient id="scale" x1="0%" y1="0%" x="100%" y2="0%">
-              <stop offset="0%" style="stop-color:rgb(0, 0, 0);" />
-              <stop offset="100%" style="stop-color:rgb(255, 255, 255);" />
-            </linearGradient>
-          </defs>
-          <rect width="100%" height="100%" style="fill:url(#scale)" />
-        </svg>
-        <div class="range-container">
-          <input type="range" id="scale-ruler-light" class="range-chooser-scale" min="1" max="24" value="16" />
+
+        <div id="shades-info-container" class="block-container">
+          Свет: <span id="art-light"></span>
+          <br />
+          Полутона: <span id="art-gray"></span>
+          <br />
+          Глубокие тени: <span id="art-dark"></span>
+          <br />
         </div>
       </div>
-      <br/>
 
-      <label for="art-display">Отображение:</label>
-      <select id="art-display">
-        <option value="original">Цвет</option>
-        <option value="grayscale">Оттенки серого</option>
-        <option value="analyzed" selected="selected">Свет-полутон-тень</option>
-      </select>
+      <div id="art-drawer-container" class="cell">
+        <canvas id="art-drawer" width="1" height="1">
+          Ваш браузер не поддерживается
+        </canvas>
+      </div>
     </div>
-    </p>
-
-    <p>
-    <div>
-      Свет: <span id="art-light"></span>
-      <br />
-      Полутона: <span id="art-gray"></span>
-      <br />
-      Глубокие тени: <span id="art-dark"></span>
-      <br />
-
-      <canvas id="art-drawer" width="300" height="300">
-        Ваш браузер не поддерживается
-      </canvas>
-    </div>
-    </p>
   </body>
 
   <script>
@@ -175,5 +211,13 @@
     };
 
     tone_choosers[0].oninput = tone_choosers[1].oninput = onchooser_change;
+
+    window.addEventListener('resize', function() {
+      if (analyzer == null)
+        return;
+
+      analyzer.resize();
+      redrawImage()
+    }, false);
   </script>
 </html>
