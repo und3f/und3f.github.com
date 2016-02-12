@@ -60,8 +60,8 @@ TonalAnalyzer.prototype.adjustCanvas = function() {
     var image_size = [this.image.width, this.image.height];
     var parent_el  = this.canvas.parentNode;
     var free_size  = this.findSizeOnFrame([
-            parent_el.offsetWidth - this.ruler_margin,
-            parent_el.offsetHeight - this.ruler_margin
+            parent_el.offsetWidth - this.ruler_margin*2,
+            parent_el.offsetHeight - this.ruler_margin*2
             ]);
 
     var c_size = image_size[0] < free_size[0] ? image_size : free_size;
