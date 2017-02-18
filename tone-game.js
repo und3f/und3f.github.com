@@ -108,7 +108,6 @@ ToneGame.prototype.drawStrip = function() {
 
     for (var i = 0; i < cellsNumber; i++) {
         var color   = colorBegin.add(colorIncrement, i);
-        console.log(i, color.toString());
         if (i == this.wrongCell) {
             if (i == 0)
                 color = color.add(this.wrongCellColorDiff, 1);
