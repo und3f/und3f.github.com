@@ -1,0 +1,73 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Тренировка тона</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+    <script src="tone-game.js" ></script>
+    <meta name="author" content="Sergii Zasenko">
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-28744394-1', 'auto');
+      ga('send', 'pageview');
+
+    </script>
+    <style>
+      * {
+          -webkit-box-sizing: border-box;
+          -moz-box-sizing: border-box;
+          box-sizing: border-box;
+      }
+
+      #canvas {
+        border: 1px solid black;
+      }
+
+      #cells {
+        width: 4em;
+      }
+    </style>
+  </head>
+  <body>
+          <label for="cells">Квадратики:</label>
+          <input type="number" id="cells" type="number" value="9" />
+
+          <label for="complexity">Сложность:</label>
+          <select id="complexity">
+            <option value="0">—</option>
+            <option value="1">Просто</option>
+            <option value="2">Средне</option>
+            <option value="3">Сложно</option>
+          </select>
+        <div id="statistic">
+          <span id="correct">0</span>/<span id="total">0</span>
+        </div>
+        <br/>
+        <canvas id="canvas" width="336" height="28">
+          Ваш браузер не поддерживается
+        </canvas>
+    <script>
+      var total = 0;
+      var correct = 0;
+      var correctEl = document.getElementById('correct');
+      var totalEl   = document.getElementById('total');
+
+      var tone_game = new ToneGame({
+        "canvas": document.getElementById('canvas'),
+        "complexityOption": document.getElementById('complexity'),
+        "cellsNumberInput": document.getElementById('cells'),
+        "answerResult": function(isAnswerCorrect) {
+          total++;
+          if (isAnswerCorrect)
+            correct++;
+
+          correctEl.textContent = correct;
+          totalEl.textContent   = total;
+        }
+      });
+    </script>
+  </body>
+</html>
