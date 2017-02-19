@@ -26,6 +26,10 @@
         margin: 4px;
       }
 
+      #canvas-container {
+        margin: auto;
+      }
+
       #canvas {
         border: 1px solid black;
       }
@@ -58,22 +62,28 @@
     <script>
       var total = 0;
       var correct = 0;
+
       var correctEl     = document.getElementById('correct');
       var totalEl       = document.getElementById('total');
       var cellsNumberEl = document.getElementById('cells');
       var canvasEl      = document.getElementById('canvas');
+      var complexityEl  = document.getElementById('complexity');
+
+      function displayStatistic(correct, total) {
+          correctEl.textContent = correct;
+          totalEl.textContent   = total;
+      }
 
       var toneGame = new ToneGame({
         "canvas": canvasEl,
-        "complexityOption": document.getElementById('complexity'),
+        "complexityOption": complexityEl,
         "cellsNumberInput": cellsNumberEl,
         "answerResult": function(isAnswerCorrect) {
           total++;
           if (isAnswerCorrect)
             correct++;
 
-          correctEl.textContent = correct;
-          totalEl.textContent   = total;
+          displayStatistic(correct, total);
         }
       });
 
@@ -95,6 +105,16 @@
 
       window.addEventListener('resize', resizeCanvas, false);
       cellsNumberEl.addEventListener('change', resizeCanvas);
+
+      function resetStatistic () {
+        correct = total = 0;
+        displayStatistic(correct, total);
+      }
+      cellsNumberEl.addEventListener('change', resizeCanvas);
+
+      cellsNumberEl.addEventListener('change', resetStatistic);
+      complexityEl.addEventListener('change', resetStatistic);
+
       resizeCanvas();
     </script>
   </body>
