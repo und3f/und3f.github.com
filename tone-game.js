@@ -127,10 +127,10 @@ ToneGame.prototype.drawStrip = function() {
                 color = color.add(this.wrongCellColorDiff, 1, Math.round(Math.random()));
         }
 
-        var x = this.cellWidth * i; 
+        var x = Math.floor(this.cellWidth * i);
         
         ctx.fillStyle = color.toString();
-        ctx.fillRect(x, 0, this.cellWidth, this.height);
+        ctx.fillRect(x, 0, Math.ceil(this.cellWidth), this.height);
     }
 }
 
