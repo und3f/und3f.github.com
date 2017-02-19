@@ -91,8 +91,10 @@
       var minCellHeigth = 24;
       var maxCellHeigth = 240;
       function resizeCanvas() {
+        canvasEl.width = 1;
         var canvasWidth = canvasContainer.clientWidth
-        var cellHeigth = canvasEl.width / cellsNumberEl.value;
+        var cellHeigth = canvasWidth / cellsNumberEl.value;
+        console.log(canvasWidth, cellHeigth);
         if (cellHeigth < minCellHeigth) {
           cellHeigth = minCellHeigth;
           canvasWidth = cellHeigth * cellsNumberEl.value;
