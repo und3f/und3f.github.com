@@ -63,7 +63,9 @@ ToneGame.prototype.calcGeometry = function(cellsNumber) {
 ToneGame.prototype.newGame = function() {
     this.ctx.clearRect(0, 0, this.width, this.height);
     this.colorError = this.complexityOption.value;
-    this.drawStrip();
+
+    var that = this;
+    setTimeout(function() { that.drawStrip() }, 100);
 }
 
 ToneGame.prototype.processCanvasClick = function(event) {
@@ -125,7 +127,7 @@ ToneGame.prototype.drawStrip = function() {
                 color = color.add(this.wrongCellColorDiff, 1, Math.round(Math.random()));
         }
 
-        var x       = Math.floor(this.cellWidth * i); 
+        var x = this.cellWidth * i; 
         
         ctx.fillStyle = color.toString();
         ctx.fillRect(x, 0, this.cellWidth, this.height);
