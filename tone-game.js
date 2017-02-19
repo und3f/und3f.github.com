@@ -35,17 +35,21 @@ function ToneGame(args) {
         that.processCanvasClick(event);
     });
 
-    var cellsNumberInput = args["cellsNumberInput"];
-    cellsNumberInput.onchange = function() {
-        that.calcGeometry(cellsNumberInput.value);
+    this.cellsNumberInput = args["cellsNumberInput"];
+    this.cellsNumberInput.onchange = function() {
+        that.restart()
     }
-    this.calcGeometry(cellsNumberInput.value);
 
     this.complexityOption = args["complexityOption"];
     this.complexityOption.onchange = function() {
         that.newGame();
     };
 
+    this.restart();
+}
+
+ToneGame.prototype.restart = function() {
+    this.calcGeometry(this.cellsNumberInput.value);
     this.newGame();
 }
 
@@ -95,10 +99,14 @@ ToneGame.prototype.drawStrip = function() {
     var cellsNumber = this.cellsNumber;
 
 
-    if (this.colorError > 0)
+    if (this.colorError > 0 && this.cellsNumber >= 3) {
         this.wrongCell  = Math.floor(Math.random() * this.cellsNumber);
-    else 
+        this.canvas.style.cursor = "pointer";
+    }
+    else {
         this.wrongCell = null;
+        this.canvas.style.cursor = "auto";
+    }
 
     var colorBegin      = new RGB("#000000");
     var colorEnd        = new RGB("#ffffff");
@@ -174,3 +182,4 @@ RGB.prototype.toString = function() {
     }).join(", ") + ")";
     return string;
 }
+

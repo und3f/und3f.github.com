@@ -50,19 +50,23 @@
           <span id="correct">0</span>/<span id="total">0</span>
         </div>
         <br/>
-        <canvas id="canvas" width="588" height="49">
-          Ваш браузер не поддерживается
-        </canvas>
+        <div id="canvas-container">
+          <canvas id="canvas" width="588" height="49">
+            Ваш браузер не поддерживается
+          </canvas>
+        </div>
     <script>
       var total = 0;
       var correct = 0;
-      var correctEl = document.getElementById('correct');
-      var totalEl   = document.getElementById('total');
+      var correctEl     = document.getElementById('correct');
+      var totalEl       = document.getElementById('total');
+      var cellsNumberEl = document.getElementById('cells');
+      var canvasEl      = document.getElementById('canvas');
 
-      var tone_game = new ToneGame({
-        "canvas": document.getElementById('canvas'),
+      var toneGame = new ToneGame({
+        "canvas": canvasEl,
         "complexityOption": document.getElementById('complexity'),
-        "cellsNumberInput": document.getElementById('cells'),
+        "cellsNumberInput": cellsNumberEl,
         "answerResult": function(isAnswerCorrect) {
           total++;
           if (isAnswerCorrect)
@@ -72,6 +76,28 @@
           totalEl.textContent   = total;
         }
       });
+
+      var canvasContainer = document.getElementById('canvas-container')
+      var minCellHeigth = 24;
+      var maxCellHeigth = 240;
+      function resizeCanvas() {
+        console.log(canvasContainer.clientWidth);
+        canvasEl.width = canvasContainer.clientWidth;
+        var cellHeigth = canvasEl.width / cellsNumberEl.value;
+        console.log(cellHeigth);
+        if (cellHeigth < minCellHeigth)
+          cellHeigth = minCellHeigth;
+        else if (cellHeigth > maxCellHeigth)
+          cellHeigth = maxCellHeigth;
+
+        canvasEl.width = canvasContainer.clientWidth;
+        canvasEl.height = cellHeigth;
+        toneGame.restart();
+      }
+
+      window.addEventListener('resize', resizeCanvas, false);
+      cellsNumberEl.addEventListener('change', resizeCanvas);
+      resizeCanvas();
     </script>
   </body>
 </html>
