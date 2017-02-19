@@ -91,14 +91,16 @@
       var minCellHeigth = 24;
       var maxCellHeigth = 240;
       function resizeCanvas() {
-        canvasEl.width = canvasContainer.clientWidth;
+        var canvasWidth = canvasContainer.clientWidth
         var cellHeigth = canvasEl.width / cellsNumberEl.value;
-        if (cellHeigth < minCellHeigth)
+        if (cellHeigth < minCellHeigth) {
           cellHeigth = minCellHeigth;
+          canvasWidth = cellHeigth * cellsNumberEl.value;
+        }
         else if (cellHeigth > maxCellHeigth)
           cellHeigth = maxCellHeigth;
 
-        canvasEl.width = canvasContainer.clientWidth;
+        canvasEl.width = canvasWidth;
         canvasEl.height = cellHeigth;
         toneGame.restart();
       }
