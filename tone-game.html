@@ -26,6 +26,10 @@
         margin: 4px;
       }
 
+      .controls {
+        margin-right: 1em;
+      }
+
       #canvas-container {
         margin: auto;
       }
@@ -46,38 +50,45 @@
 
       #credits {
         position: fixed;
-        bottom: 1em;
+        bottom: 4px;
       }
       
       #sbara-logo {
         width: 3.0em;
         float: left;
         margin-right: 0.2em;
+        vertical-align: middle;
       }
 
       #sbara-credits {
-        width: 20em;
+        margin: 0;
+        padding: 0;
       }
 
     </style>
   </head>
   <body>
-    <div class="">
-      <label for="cells">Bars:</label>
-      <input type="number" id="cells" type="number" value="9" />
+    <span id="game-controls">
+      <span class="controls">
+        <label for="cells">Bars:</label>
+        <input type="number" id="cells" type="number" value="9" />
+      </span>
 
-      <label for="complexity">Complexity:</label>
-      <select id="complexity">
-        <option value="0">—</option>
-        <option value="1">Easy</option>
-        <option value="2">Middle</option>
-        <option value="3">Hard</option>
-      </select>
-    </div>
-    <div id="statistic" class="">
+      <span class="controls">
+        <label for="complexity">Complexity:</label>
+        <select id="complexity">
+          <option value="0">—</option>
+          <option value="1">Easy</option>
+          <option value="2">Middle</option>
+          <option value="3">Hard</option>
+        </select>
+      </span>
+    </span>
+    <span id="statistic" class="">
       Statistic:
       <span id="correct">0</span>/<span id="total">0</span>
-    </div>
+    </span>
+
     <div id="canvas-container">
       <canvas id="canvas" width="588" height="49">
         Your browser does not support HTML5.
