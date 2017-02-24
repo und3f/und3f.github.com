@@ -130,9 +130,11 @@
         }
       });
 
-      var canvasContainer = document.getElementById('canvas-container')
+      var canvasContainer = document.getElementById('canvas-container');
       var minCellHeigth = 24;
       var maxCellHeigth = 240;
+      var creditsEl = document.getElementById('credits');
+      var maxCreditsFontSize = 16;
       function resizeCanvas() {
         canvasEl.width = 1;
         var canvasWidth = canvasContainer.clientWidth
@@ -147,6 +149,11 @@
         canvasEl.width = canvasWidth;
         canvasEl.height = cellHeigth;
         toneGame.restart();
+
+        var fontsize = cellHeigth/5;
+        if (fontsize > maxCreditsFontSize) 
+          fontsize = maxCreditsFontSize;
+        creditsEl.style["font-size"] = fontsize + 'px';
       }
 
       window.addEventListener('resize', resizeCanvas, false);
