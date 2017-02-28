@@ -31,6 +31,11 @@
         color: #414140;
       }
 
+      #logo {
+        height: 1em;
+        vertical-align: text-bottom;
+      }
+
       #cells, #complexity, #rating {
         background-color: #EFEFEE;
         padding-left: 0.40em;
@@ -124,6 +129,7 @@
     <span id="statistic" class="controls">
       <label for="rating">Rating:</label>
       <input type="text" id="rating" value="" disabled/>
+      <img id="logo" src="images/tone-game.png" />
     </span>
 
     <div id="canvas-container">
@@ -207,6 +213,7 @@
       complexityEl.addEventListener('change', resetStatistic);
 
       resizeCanvas();
+      document.getElementById('sbara-credits').style.display = 'initial';
     </script>
   </body>
 </html>
