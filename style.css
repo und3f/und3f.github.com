@@ -21,13 +21,13 @@ a {
 /* Main page */
 
 #card {
-    margin: 20px auto 0px 20px;
+    margin: 10px auto 0px 10px;
     background-color: #fff;
     padding: 5px 0 0 20px;
     box-shadow: 0 3px 3px #aaaaaa;
     width: 85.60mm;
     /* bigger and bigger */
-    height: 68.98mm;
+    height: 60.98mm;
 }
 
 #head {
