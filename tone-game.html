@@ -18,6 +18,12 @@
     <style>
       body {
         margin: 4px;
+        font-family: 'Roboto', sans-serif;
+        color: #414140;
+      }
+
+      a {
+        color: #414140;
       }
 
       .controls {
@@ -36,32 +42,37 @@
         top: 0;
         left: 0;
         right: 0;
-        bottom: 20%;
+        bottom: 15%;
       }
 
       #cells {
-        width: 4em;
+        width: 3.5em;
+      }
+
+      #complexity {
+        width: 3.5em;
       }
 
       #credits {
         position: fixed;
         bottom: 4px;
         left: 4px;
-        font-size: 1em;
-        display: flex;
-        align-items: center;
       }
       
+      #sbara-credits {
+        margin-bottom: 0.2em;
+      }
+
       #sbara-logo {
-        height: 4em;
-        float: left;
+        height: 2.5em;
         margin-right: 0.2em;
       }
 
-      #sbara-credits {
-        padding: 0;
-        color: #3c3c3a;
-        float: right;
+      #credits-author {
+      }
+
+      #credits-license {
+        font-size: 0.6em;
       }
 
     </style>
@@ -74,7 +85,7 @@
       </span>
 
       <span class="controls">
-        <label for="complexity">Skill level:</label>
+        <label for="complexity">Difficulty:</label>
         <select id="complexity">
           <option value="0">—</option>
           <option value="1">Beginner</option>
@@ -84,7 +95,7 @@
       </span>
     </span>
     <span id="statistic" class="controls">
-      Statistic:
+      Rating:
       <span id="correct">0</span>/<span id="total">0</span>
     </span>
 
@@ -95,12 +106,19 @@
     </div>
 
     <div id="credits">
-      <img id="sbara-logo" src="images/sbara-logo.png"/>
-      <span id="sbara-credits">
-        Developed by Sergii Zasenko <br/>
-        for Svyatoslav Brakhnov <br/>
-        Academy of Realist Art
-      </span>
+      <div id="sbara-credits">
+        <a href="https://www.facebook.com/brakhnovacademy"
+           target="_blank" rel="external"
+           ><img id="sbara-logo" src="images/sbara-logo.png"
+            title="Svyatoslav Brakhnov Academy of Realist Art"
+        /></a>
+      </div>
+      <div id="credits-author">
+        Copyright © 2017 <a href="http://zasenko.name" rel="author">Sergii Zasenko</a>
+      </div>
+      <div id="credits-license">
+        This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative Commons Attribution-ShareAlike 4.0 International License</a>.
+      </div>
     </div>
     <script>
       var total = 0;
@@ -133,7 +151,7 @@
       var canvasContainer = document.getElementById('canvas-container');
       var minCellHeigth = 24;
       var maxCellHeigth = 240;
-      var creditsEl = document.getElementById('credits');
+      var logoEl = document.getElementById('sbara-credits');
       var maxCreditsFontSize = 16;
       function resizeCanvas() {
         canvasEl.width = 1;
@@ -150,10 +168,10 @@
         canvasEl.height = cellHeigth;
         toneGame.restart();
 
-        var fontsize = cellHeigth/5;
+        var fontsize = cellHeigth;
         if (fontsize > maxCreditsFontSize) 
           fontsize = maxCreditsFontSize;
-        creditsEl.style["font-size"] = fontsize + 'px';
+        logoEl.style["font-size"] = fontsize + 'px';
       }
 
       window.addEventListener('resize', resizeCanvas, false);
