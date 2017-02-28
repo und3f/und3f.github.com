@@ -156,7 +156,6 @@
       var canvasContainer = document.getElementById('canvas-container');
       var minCellHeigth = 24;
       var maxCellHeigth = 240;
-      var logoEl = document.getElementById('sbara-credits');
       var maxCreditsFontSize = 16;
       function resizeCanvas() {
         canvasEl.width = 1;
@@ -172,11 +171,6 @@
         canvasEl.width = canvasWidth;
         canvasEl.height = cellHeigth;
         toneGame.restart();
-
-        var fontsize = cellHeigth;
-        if (fontsize > maxCreditsFontSize) 
-          fontsize = maxCreditsFontSize;
-        logoEl.style["font-size"] = fontsize + 'px';
       }
 
       window.addEventListener('resize', resizeCanvas, false);
