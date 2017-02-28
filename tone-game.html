@@ -27,14 +27,23 @@
         color: #414140;
       }
 
-      #cells, #complexity {
+      #cells, #complexity, #rating {
         background-color: #EFEFEE;
         padding-left: 0.40em;
+        border-style: solid;
+        border-color: #404041;
+        border-width: 0 0 1px 0;
+        text-align: right;
+        -webkit-appearance:none;
+        -moz-appearance:none;
+        appearance:none;
+        width: 3.5em;
       }
 
       .controls {
         margin-right: 1em;
         white-space: nowrap;
+        font-style: italic;
       }
 
       #canvas-container {
@@ -49,14 +58,6 @@
         left: 0;
         right: 0;
         bottom: 15%;
-      }
-
-      #cells {
-        width: 3.5em;
-      }
-
-      #complexity {
-        width: 3.5em;
       }
 
       #credits {
@@ -105,8 +106,8 @@
       </span>
     </span>
     <span id="statistic" class="controls">
-      Rating:
-      <span id="correct">0</span>/<span id="total">0</span>
+      <label for="rating">Rating:</label>
+      <input type="text" id="rating" value="" disabled/>
     </span>
 
     <div id="canvas-container">
@@ -135,15 +136,13 @@
       var total = 0;
       var correct = 0;
 
-      var correctEl     = document.getElementById('correct');
-      var totalEl       = document.getElementById('total');
+      var ratingEl      = document.getElementById('rating');
       var cellsNumberEl = document.getElementById('cells');
       var canvasEl      = document.getElementById('canvas');
       var complexityEl  = document.getElementById('complexity');
 
       function displayStatistic(correct, total) {
-          correctEl.textContent = correct;
-          totalEl.textContent   = total;
+          ratingEl.value = correct + "/" + total;
       }
 
       var toneGame = new ToneGame({
