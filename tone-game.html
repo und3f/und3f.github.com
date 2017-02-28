@@ -92,7 +92,19 @@
     <span id="game-controls">
       <span class="controls">
         <label for="cells">Bars:</label>
-        <input type="number" id="cells" type="number" value="9" />
+        <select id="cells">
+          <script>
+            var bars = document.getElementById('cells');
+            for (var i = 3; i <= 64; i++) {
+              var option = document.createElement("option");
+              option.text = i;
+              option.value = i;
+              if (i == 9)
+                option.selected = true;
+              bars.add(option);
+            }
+          </script>
+        </select>
       </span>
 
       <span class="controls">
