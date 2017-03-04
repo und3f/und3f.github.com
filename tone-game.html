@@ -37,7 +37,7 @@
         vertical-align: text-bottom;
       }
 
-      #cells, #complexity, #rating {
+      .controls-input {
         background-color: #EFEFEE;
         border-style: solid;
         border-color: #404041;
@@ -48,6 +48,11 @@
         appearance:none;
         width: 3.6em;
         color: #414140;
+        padding-right: 2px;
+      }
+
+      select.controls-input {
+        direction: rtl;
       }
 
       .controls {
@@ -102,7 +107,7 @@
     <span id="game-controls">
       <span class="controls">
         <label for="cells">Bars:</label>
-        <select id="cells">
+        <select id="cells" class="controls-input">
           <script>
             var bars = document.getElementById('cells');
             for (var i = 3; i <= 85; i++) {
@@ -119,7 +124,7 @@
 
       <span class="controls">
         <label for="complexity">Difficulty:</label>
-        <select id="complexity">
+        <select id="complexity" class="controls-input">
           <option value="0" label=" "></option>
           <option value="1">I</option>
           <option value="2">II</option>
@@ -129,7 +134,7 @@
     </span>
     <span id="statistic" class="controls">
       <label for="rating">Rating:</label>
-      <input type="text" id="rating" value="" disabled/>
+      <input type="text" id="rating" class="controls-input" value="" disabled/>
     </span>
 
     <div id="canvas-container">
