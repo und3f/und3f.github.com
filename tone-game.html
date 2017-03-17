@@ -110,27 +110,12 @@
       <span class="controls">
         <label for="cells">Bars:</label>
         <select id="cells" class="controls-input">
-          <script>
-            var bars = document.getElementById('cells');
-            for (var i = 3; i <= 85; i++) {
-              var option = document.createElement("option");
-              option.text = i;
-              option.value = i;
-              if (i == 9)
-                option.selected = true;
-              bars.add(option);
-            }
-          </script>
         </select>
       </span>
 
       <span class="controls">
         <label for="complexity">Difficulty:</label>
         <select id="complexity" class="controls-input">
-          <option value="0" label=" "></option>
-          <option value="1">I</option>
-          <option value="2">II</option>
-          <option value="3">III</option>
         </select>
       </span>
     </span>
@@ -162,6 +147,13 @@
       </div>
     </div>
     <script>
+      var SHADES = 255;
+      var DIFFICULTY_MIN = 3;
+
+      var BARS_MIN = 3;
+      var BARS_MAX = Math.floor(SHADES / DIFFICULTY_MIN);
+      var DEFAULT_BAR = 9;
+
       var total = 0;
       var correct = 0;
 
@@ -169,6 +161,54 @@
       var cellsNumberEl = document.getElementById('cells');
       var canvasEl      = document.getElementById('canvas');
       var complexityEl  = document.getElementById('complexity');
+
+      function generateOption(index, text) {
+          var option = document.createElement("option");
+          option.text = text || index;
+          option.value = index;
+          return option;
+      }
+
+      var barsEl = document.getElementById('cells');
+      var BARS_SPLIT = 13;
+      for (var i = BARS_MIN; i <= BARS_MAX; i++) {
+        var option = generateOption(i);
+        if (i == DEFAULT_BAR)
+          option.selected = true;
+        if (i == BARS_SPLIT) {
+          var splitOption      = generateOption(0, 'Advanced');
+          splitOption.disabled = true;
+          barsEl.add(splitOption);
+        }
+        barsEl.add(option);
+      }
+
+      var DIFFICULTY_SPLIT = DIFFICULTY_MIN;
+      function generateLevels() {
+        var bars = barsEl.value;
+        var DIFFICULTY_MAX = SHADES / bars;
+
+        complexityEl.innerHTML = '';
+        var defaultOption   = generateOption(0, ' ');
+        defaultOption.selected = true;
+        complexityEl.add(defaultOption);
+
+
+        for (var i = 1; i <= DIFFICULTY_SPLIT; i++) {
+          complexityEl.add(generateOption(i));
+        }
+
+        var splitOption   = generateOption(0, 'Advanced');
+        splitOption.disabled = true;
+        complexityEl.add(splitOption);
+
+        for (var i = DIFFICULTY_SPLIT+1; i <= DIFFICULTY_MAX; i++) {
+          complexityEl.add(generateOption(i));
+        }
+      };
+
+      barsEl.addEventListener('change', generateLevels, false);
+      generateLevels();
 
       function displayStatistic(correct, total) {
           ratingEl.value = correct + "/" + total;
