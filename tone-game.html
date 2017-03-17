@@ -161,6 +161,7 @@
       var cellsNumberEl = document.getElementById('cells');
       var canvasEl      = document.getElementById('canvas');
       var complexityEl  = document.getElementById('complexity');
+      var creditsEl     = document.getElementById('credits');
 
       function generateOption(index, text) {
           var option = document.createElement("option");
@@ -230,18 +231,26 @@
       var canvasContainer = document.getElementById('canvas-container');
       var minCellHeigth = 24;
       var maxCellHeigth = 240;
-      var maxCreditsFontSize = 16;
+      var MARGIN = 8;
       function resizeCanvas() {
-        canvasEl.width = 1;
+        canvasEl.width  = 1;
+        canvasEl.height = 1;
+        var maxHeigth = Math.min(
+            maxCellHeigth, 
+            creditsEl.getBoundingClientRect().top 
+          - ratingEl.getBoundingClientRect().bottom
+          - MARGIN * 2
+        );
         var canvasWidth = canvasContainer.clientWidth
         var cellHeigth = canvasWidth / cellsNumberEl.value;
         if (cellHeigth < minCellHeigth) {
           cellHeigth = minCellHeigth;
           canvasWidth = cellHeigth * cellsNumberEl.value;
         }
-        else if (cellHeigth > maxCellHeigth)
-          cellHeigth = maxCellHeigth;
+        else if (cellHeigth > maxHeigth)
+          cellHeigth = maxHeigth;
 
+        console.log(minCellHeigth, cellHeigth, maxHeigth);
         canvasEl.width = canvasWidth;
         canvasEl.height = cellHeigth;
         toneGame.restart();
