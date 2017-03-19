@@ -238,20 +238,16 @@
       function resizeCanvas() {
         canvasEl.width  = 1;
         canvasEl.height = 1;
+
         var maxHeigth = Math.min(
             maxCellHeigth, 
             creditsEl.getBoundingClientRect().top 
           - ratingEl.getBoundingClientRect().bottom
           - MARGIN * 2
         );
+        var cellHeigth = maxHeigth;
+
         var canvasWidth = canvasContainer.clientWidth
-        var cellHeigth = canvasWidth / cellsNumberEl.value;
-        if (cellHeigth < minCellHeigth) {
-          cellHeigth = minCellHeigth;
-          canvasWidth = cellHeigth * cellsNumberEl.value;
-        }
-        else if (cellHeigth > maxHeigth)
-          cellHeigth = maxHeigth;
 
         canvasEl.width = canvasWidth;
         canvasEl.height = cellHeigth;
