@@ -19,9 +19,7 @@ function ToneGame(args) {
     this.canvas = args["canvas"];
     this.ctx = this.canvas.getContext('2d');
 
-    this.width          = this.canvas.width;
-    this.cellWidth      = this.width/this.cellsNumber;
-    this.height         = this.canvas.height;
+    this.calcGeometry();
 
     this.answerResultCallback = args["answerResult"];
 
@@ -56,8 +54,11 @@ ToneGame.prototype.restart = function() {
 ToneGame.prototype.calcGeometry = function(cellsNumber) {
     this.cellsNumber    = cellsNumber;
     this.width          = this.canvas.width;
-    this.cellWidth      = this.width/this.cellsNumber;
     this.height         = this.canvas.height;
+    if (cellsNumber !== undefined) {
+        this.cellWidth      = this.width/this.cellsNumber;
+        this.visualCellWidth = this.canvas.offsetWidth/this.cellsNumber;
+    }
 }
 
 ToneGame.prototype.newGame = function() {
@@ -78,9 +79,8 @@ ToneGame.prototype.processCanvasClick = function(event) {
         return;
 
     var x = event.pageX - this.canvas.offsetLeft;
-    var y = event.pageY - this.canvas.offsetTop;
 
-    var cellIndex = Math.floor(x / this.cellWidth);
+    var cellIndex = Math.floor(x / this.visualCellWidth);
 
     this.highlightCell(cellIndex, this.style.wrong);
     this.highlightCell(this.wrongCell, this.style.correct);
