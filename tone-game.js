@@ -101,8 +101,8 @@ ToneGame.prototype.drawStrip = function() {
     var cellsNumber = this.cellsNumber;
 
 
-    if (this.colorError > 0 && this.cellsNumber >= 3) {
-        this.wrongCell  = Math.floor(Math.random() * this.cellsNumber);
+    if (this.colorError > 0 && this.cellsNumber >= 4) {
+        this.wrongCell  = Math.floor(Math.random() * (this.cellsNumber - 2) + 1);
         this.canvas.style.cursor = "pointer";
     }
     else {
