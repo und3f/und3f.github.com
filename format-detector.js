@@ -86,8 +86,9 @@ var FormatFinderOriginal = function() {
         [Math.sqrt(3), new AR('√3')],
         [Math.sqrt(4), new AR('√4')],
         [Math.sqrt(5), new AR('√5')],
-        [(1 + Math.sqrt(2)), new ARN('серебрянный прямоугольник')],
+        [(1 + Math.sqrt(2)), new ARN('серебряный прямоугольник')],
         [(1 + Math.sqrt(5)) / 2, new ARN('золотой прямоугольник')],
+        [0.55, new ARN('платиновый прямоугольник')],
         [11/10, new AR(11, 10)],
         [10/9, new AR(10, 9)],
         [6/5, new AR(6, 5)],
@@ -409,6 +410,8 @@ function GridFactory(name) {
             return SplitGolden;
         case "silver":
             return SplitSilver;
+        case "platinum":
+            return SplitPlatinum;
         case "sqrt2":
             return SplitSqrt2;
         case "sqrt3":
@@ -435,6 +438,9 @@ function SplitSilver(length) {
     return length * (Math.sqrt(2) - 1);
 }
 
+function SplitPlatinum(length) {
+    return length - length * 0.55;
+}
 function SplitSqrt2(length) {
     return length / Math.sqrt(2);
 }
