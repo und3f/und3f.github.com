@@ -5,6 +5,7 @@
     <title>Color wheel</title>
     <meta name="author" content="Sergii Zasenko">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+    <script src="color-wheel.js" ></script>
     <style>
       body {
         margin: 4px;
@@ -39,67 +40,20 @@
     </style>
   </head>
   <body>
+    <p>
+    <form>
+      Colors:
+      <select id="colors-select">
+        <option value="classic">Classic</option>
+        <option value="rgb_valued" selected="selected">RGB Spectrum dark</option>
+        <option value="rgb">RGB Spectrum</option>
+      </select>
+    </form>
+    </p>
+
     <svg id="color-wheel" width="300" height="300">
     </svg>
 
-    <script>
-      var colors = [
-        "cea50d", "cf920b", "d16e10",
-        "ce5c1e", "cf4721", "cb3a1f",
-        "c12e24", "b62826", "a52c35",
-        "952939", "782841", "592d5a",
-        "3c3271", "29418a", "12419c",
-        "105395", "065988", "0e6785",
-        "127381", "077d75", "127f59",
-        "228741", "6c9f32", "a5a519"
-      ];
-      var wheelEl = document.getElementById("color-wheel");
-      var width = wheelEl.width.baseVal.value;
-      var height = wheelEl.height.baseVal.value;
-
-      var radius = Math.min(width, height)/2;
-      var labelSize = radius * 0.25;
-      var labelPadding = 0.05;
-
-      function calcSegmentStartPosition(radius, segment, segments, endSegment, roffset) {
-        if (roffset === undefined) 
-          roffset = 0;
-
-        var padding = labelPadding;
-        if (endSegment)
-          padding = -padding;
-
-        var angle = (segment - 1/2 + padding) / segments * 2 * Math.PI  - Math.PI / 2;
-
-        var x = Math.cos(angle) * radius + radius + roffset;
-        var y = Math.sin(angle) * radius + radius + roffset;
-        return [x, y];
-      }
-
-      var innerRadius = radius - labelSize;
-      var segments = colors.length
-      for (var is in colors) {
-        var i = parseInt(is);
-        var icoffset = radius-innerRadius;
-        var outerCircleStart = calcSegmentStartPosition(radius, i, segments);
-        var outerCircleEnd = calcSegmentStartPosition(radius, i+1, segments, true);
-        var innerCircleEnd  = calcSegmentStartPosition(innerRadius, i+1, segments, true, icoffset);
-        var innerCircleStart  = calcSegmentStartPosition(innerRadius, i, segments, false, icoffset);
-
-        var path = "";
-        path += "M " + outerCircleStart.join(" ");
-        path += "A " + [radius, radius, 0, 0, 1].join(" ") + " " + outerCircleEnd.join(" ");
-        path += "L " + innerCircleEnd.join(" ");
-        path += "A " + [innerRadius, innerRadius, 0, 0, 0].join(" ") + " " + innerCircleStart.join(" ");
-
-        var colorEl = document.createElementNS(
-            "http://www.w3.org/2000/svg",
-            'path');
-        colorEl.setAttribute("fill", "#" + colors[i]);
-        colorEl.setAttribute("d", path);
-        wheelEl.appendChild(colorEl);
-      }
-    </script>
     <div id="credits">
       <div id="credits-author">
         Copyright © 2017 <a href="http://zasenko.name" rel="author">Sergii Zasenko</a>
@@ -108,5 +62,25 @@
         This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative Commons Attribution-ShareAlike 4.0 International License</a>.
       </div>
     </div>
+
+    <script>
+      var wheelEl = document.getElementById("color-wheel");
+      var colorsEl = document.getElementById("colors-select");
+      var colorSchemes = {
+        classic: function() {return colors_classic},
+        classic_saturated: function() {return colors_saturated},
+        rgb: generateWheel,
+        rgb_valued: function(n, s, v) {return generateWheel(n, s, v/1.2)},
+      }
+
+      function redrawWheel() {
+        var colorScheme = colorSchemes[colorsEl.value];
+        wheelEl.innerHTML = "";
+        initWheel(wheelEl, colorScheme);
+      }
+
+      colorsEl.addEventListener('change', redrawWheel);
+      redrawWheel();
+    </script>
   </body>
 </html>
