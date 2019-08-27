@@ -89,7 +89,7 @@ function convertFile(file) {
 
             let svgData = "data:image/svg+xml;base64," + btoa(svgHTML);
             $("#download").attr("href", svgData);
-            $("#download").attr("download", file.name);
+            $("#download").attr("download", file.name.replace(/\.[^/.]+$/, ".svg"));
             canvas.setAttribute("src", svgData);
             resultEl.modal();
         });
