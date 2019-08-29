@@ -88,6 +88,7 @@ function convertFile(file) {
             })
 
             svgHTML += svg.footer();
+            epsContent += eps.footer();
 
             // TODO: convert to EPS only on request
             let svgData = "data:image/svg+xml;base64," + btoa(svgHTML);
