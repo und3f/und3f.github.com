@@ -64,6 +64,14 @@ formEl.addEventListener("submit", (e) => {
 
 });
 
+resultEl.on('hidden.bs.modal', () => {
+    window.URL.revokeObjectURL($("#download-svg").attr("href"))
+    window.URL.revokeObjectURL($("#download-eps").attr("href"))
+
+    $("#download-svg").removeAttr("href")
+    $("#download-eps").removeAttr("href");
+});
+
 function convertFile(file) {
     let reader = new FileReader();
     reader.onload = function(error, data) {
@@ -91,7 +99,6 @@ function convertFile(file) {
             epsContent += eps.footer();
 
             // TODO: convert to EPS only on request
-            let svgData = "data:image/svg+xml;base64," + btoa(svgHTML);
             let svgURL = window.URL.createObjectURL(new Blob([svgHTML], {type: 'image/svg+xml'}));
             let epsURL = window.URL.createObjectURL(new Blob([epsContent], {type: 'application/postscript'}));
 
