@@ -76,19 +76,27 @@ function convertFile(file) {
 
 
             let svg = new utils.SVG(image.height, image.width, pixelMultiplier);
+            let eps = new utils.EPS(image.height, image.width, pixelMultiplier);
 
-            let svgHTML = svg.header();
+            let svgHTML     = svg.header();
+            let epsContent  = eps.header();
 
             let tracer = new ContourTracing(image);
             tracer.traceContours((contour, pixel) => {
                 svgHTML += svg.path(contour, pixel);
+                epsContent += eps.path(contour, pixel);
             })
 
             svgHTML += svg.footer();
 
+            // TODO: convert to EPS only on request
             let svgData = "data:image/svg+xml;base64," + btoa(svgHTML);
-            $("#download").attr("href", svgData);
-            $("#download").attr("download", file.name.replace(/\.[^/.]+$/, ".svg"));
+            $("#download-svg").attr("href", svgData);
+            $("#download-svg").attr("download", file.name.replace(/\.[^/.]+$/, ".svg"));
+
+            $("#download-eps").attr("href", "data:application/postscript;base64," + btoa(epsContent));
+            $("#download-eps").attr("download", file.name.replace(/\.[^/.]+$/, ".eps"));
+
             canvas.setAttribute("src", svgData);
             resultEl.modal();
         });

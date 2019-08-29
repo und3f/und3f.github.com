@@ -77,19 +77,27 @@ function convertFile(file) {
 
 
             let svg = new utils.SVG(image.height, image.width, pixelMultiplier);
+            let eps = new utils.EPS(image.height, image.width, pixelMultiplier);
 
-            let svgHTML = svg.header();
+            let svgHTML     = svg.header();
+            let epsContent  = eps.header();
 
             let tracer = new ContourTracing(image);
             tracer.traceContours((contour, pixel) => {
                 svgHTML += svg.path(contour, pixel);
+                epsContent += eps.path(contour, pixel);
             })
 
             svgHTML += svg.footer();
 
+            // TODO: convert to EPS only on request
             let svgData = "data:image/svg+xml;base64," + btoa(svgHTML);
-            $("#download").attr("href", svgData);
-            $("#download").attr("download", file.name.replace(/\.[^/.]+$/, ".svg"));
+            $("#download-svg").attr("href", svgData);
+            $("#download-svg").attr("download", file.name.replace(/\.[^/.]+$/, ".svg"));
+
+            $("#download-eps").attr("href", "data:application/postscript;base64," + btoa(epsContent));
+            $("#download-eps").attr("download", file.name.replace(/\.[^/.]+$/, ".eps"));
+
             canvas.setAttribute("src", svgData);
             resultEl.modal();
         });
@@ -2841,6 +2849,61 @@ SVG.prototype.path = function(contour, pixel) {
     path += ` L${contour[i][1] * m} ${contour[i][0] * m}`;
   }
   path += ` Z" style="fill:rgb(${rgb})" />\n`
+
+  return path;
+}
+
+var EPS = exports.EPS = function (height, width, _multiplier) {
+  this.height = height;
+  this.width = width;
+  this.multiplier = _multiplier == null ? 1 : _multiplier
+}
+
+EPS.prototype.header = function() {
+  return `\
+%!PS-Adobe-3.0 EPSF-3.0
+%%Creator: vectorize-pixelart (https://github.com/und3f/vectorize-pixelart)
+%%BoundingBox: 0 0 ${this.width * this.multiplier} ${this.height * this.multiplier}
+%%Pages: 1
+%%EndComments
+%%BeginProlog
+/m { moveto } bind def
+/l { lineto } bind def
+/z { closepath } bind def
+/f { fill } bind def
+/rg { setrgbcolor } bind def
+%%EndProlog
+%%Page: 1 1
+%%BeginPageSetup
+%%PageBoundingBox: 0 0 ${this.width * this.multiplier} ${this.height * this.multiplier}
+%%EndPageSetup
+`;
+}
+
+EPS.prototype.footer = function() {
+    return `\
+showpage
+%%Trailer
+%%EOF
+`;
+}
+
+EPS.prototype.path = function(contour, pixel) {
+  let m = this.multiplier;
+  let height = this.height;
+
+  let path = '';
+  for (let i = 0; i < 3; i++) {
+    path += (pixel[i]/255).toFixed(3) + ' ';
+  }
+  path += " rg\n";
+
+  let move = contour.shift();
+  path += `${(move[1]) * m} ${(height - move[0]) * m} m`;
+  for (let i in contour) {
+    path += ` ${contour[i][1] * m} ${(height - contour[i][0]) * m} l`;
+  }
+  path += ` z\nf\n`
 
   return path;
 }
