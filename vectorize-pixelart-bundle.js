@@ -93,13 +93,16 @@ function convertFile(file) {
 
             // TODO: convert to EPS only on request
             let svgData = "data:image/svg+xml;base64," + btoa(svgHTML);
-            $("#download-svg").attr("href", svgData);
+            let svgURL = window.URL.createObjectURL(new Blob([svgHTML], {type: 'image/svg+xml'}));
+            let epsURL = window.URL.createObjectURL(new Blob([epsContent], {type: 'application/postscript'}));
+
+            $("#download-svg").attr("href", svgURL);
             $("#download-svg").attr("download", file.name.replace(/\.[^/.]+$/, ".svg"));
 
-            $("#download-eps").attr("href", "data:application/postscript;base64," + btoa(epsContent));
+            $("#download-eps").attr("href", epsURL);
             $("#download-eps").attr("download", file.name.replace(/\.[^/.]+$/, ".eps"));
 
-            canvas.setAttribute("src", svgData);
+            canvas.setAttribute("src", svgURL);
             resultEl.modal();
         });
     };
