@@ -80,6 +80,7 @@ function displayImageFile(file) {
 }
 
 function setInputImageFile(file) {
+    fileEl.value = "";
     $(bigFileCheckbox.parentNode).hide();
     inputImageFile = null;
 
@@ -136,6 +137,7 @@ resultEl.on('hidden.bs.modal', () => {
 function convertFile(file) {
     let reader = new FileReader();
     reader.onload = function(error, data) {
+        let fileName = file.name || "image.png";
         let png = new PNG();
         png.parse(reader.result, () => {
             let image = new utils.PNGImageData(png);
@@ -164,10 +166,10 @@ function convertFile(file) {
             let epsURL = window.URL.createObjectURL(new Blob([epsContent], {type: 'application/postscript'}));
 
             $("#download-svg").attr("href", svgURL);
-            $("#download-svg").attr("download", file.name.replace(/\.[^/.]+$/, ".svg"));
+            $("#download-svg").attr("download", fileName.replace(/\.[^/.]+$/, ".svg"));
 
             $("#download-eps").attr("href", epsURL);
-            $("#download-eps").attr("download", file.name.replace(/\.[^/.]+$/, ".eps"));
+            $("#download-eps").attr("download", fileName.replace(/\.[^/.]+$/, ".eps"));
 
             canvas.setAttribute("src", svgURL);
             resultEl.modal();
