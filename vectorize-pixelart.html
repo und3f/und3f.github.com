@@ -57,6 +57,34 @@ body {
 
 #form {
 }
+
+#inputImageDD {
+  padding: 1em;
+  background: transparent url('images/transparent.png');
+  opacity: 0.3;
+  display: inline-block;
+}
+
+#inputImageDD.hover {
+  opacity: 1;
+}
+
+#inputImageDD.preview {
+  opacity: 1;
+  padding: 0;
+}
+
+#inputImageDDDisplayer {
+  width: 20em;
+  max-height: 20em;
+  image-rendering: crisp-edges;
+}
+
+#inputImageDDDisplayer[src=""] {
+  height: 20em;
+  visibility: hidden;
+}
+
     </style>
     
   </head>
@@ -71,9 +99,18 @@ body {
 
           <div class="card-body">
             <form id="form">
+            <span>
+              <h5>Drag and drop pixel art image</h5>
+
+              <div class="mb-2">
+                <div id="inputImageDD">
+                  <img id="inputImageDDDisplayer" src="" />
+                </div>
+
+              </div>
               <div class="custom-file">
-                <input type="file" class="custom-file-input" id="inputImage" required>
-                <label class="custom-file-label" for="inputImage">Pixel art image</label>
+                <input type="file" class="custom-file-input d-none" id="inputImage">
+                <label class="custom-file-label d-none" for="inputImage">Pixel art image</label>
                 <div class="invalid-feedback">Please provide corrent PNG file.</div>
                 <small class="form-text text-muted">Only PNG images are supported.</small>
               </div>

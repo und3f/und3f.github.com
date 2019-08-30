@@ -22,6 +22,8 @@ var PNG             = require('pngjs').PNG,
 
 const targetSize = 2 ** 23;
 
+let fileElDD = document.getElementById("inputImageDD");
+
 let fileEl = document.getElementById("inputImage");
 fileEl.value = "";
 
@@ -29,16 +31,70 @@ let canvas = document.getElementById("canvas");
 let resultEl = $("#result");
 let bigFileCheckbox = document.getElementById("convertBigFile");
 
+let inputImageFile;
+
+fileElDD.addEventListener("click", (e) => {
+    fileEl.click();
+});
+
+fileElDD.addEventListener("drop", (e) => {
+    e.preventDefault()
+    setInputImageFile(e.dataTransfer.files[0]);
+    fileElDD.classList.remove("hover");
+}, false);
+
+fileElDD.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    return false;
+}, false);
+
+fileElDD.addEventListener("dragenter", function( event ) {
+    fileElDD.classList.add("hover");
+}, false);
+
+fileElDD.addEventListener("dragleave", function( event ) {
+    fileElDD.classList.remove("hover");
+}, false);
+
 fileEl.addEventListener("input", (e) => {
-    let file = fileEl.files[0];
+    setInputImageFile(fileEl.files[0]);
+});
+
+function displayImageFile(file) {
+    let imageEl = document.getElementById("inputImageDDDisplayer");
+
+    if (file == null) {
+        imageEl.setAttribute("src", "");
+        return;
+    }
+
+    let reader = new FileReader();
+
+    reader.addEventListener("load", () => {
+        imageEl.setAttribute("src", reader.result);
+        fileElDD.classList.add("preview");
+        
+    }, false);
+
+    reader.readAsDataURL(file);
+}
+
+function setInputImageFile(file) {
+    inputImageFile = null;
 
     $(fileEl).next('.custom-file-label').html(file.name);
 
-    if (file === null || file.type != "image/png") {
-        fileEl.setCustomValidity("Please provide corrent PNG file");
+    if (file == null || file.type != "image/png") {
+        fileEl.setCustomValidity("Please provide correct PNG file");
         formEl.classList.add("was-validated");
-        return;
+
+        file = null;
     }
+
+    inputImageFile = file;
+    displayImageFile(file);
+    if (file == null)
+        return;
 
     if (file.size > 2 * 2 ** 10) {
         bigFileCheckbox.checked = false;
@@ -49,15 +105,19 @@ fileEl.addEventListener("input", (e) => {
     }
 
     fileEl.setCustomValidity("");
-});
+}
 
 let formEl = document.getElementById("form");
 formEl.addEventListener("submit", (e) => {
     e.preventDefault();
+
+    if (inputImageFile == null) {
+        fileEl.setCustomValidity("Please provide pixel art image");
+    }
     if (formEl.checkValidity() == false) {
         e.stopPropagation();
     } else {
-        convertFile(fileEl.files[0])
+        convertFile(inputImageFile)
     }
 
     formEl.classList.add("was-validated");
