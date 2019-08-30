@@ -81,6 +81,7 @@ function displayImageFile(file) {
 }
 
 function setInputImageFile(file) {
+    $(bigFileCheckbox.parentNode).hide();
     inputImageFile = null;
 
     $(fileEl).next('.custom-file-label').html(file.name);
