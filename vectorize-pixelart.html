@@ -22,7 +22,7 @@
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
-    <style type="text/css" media="all">
+    <style media="all">
 html {
   position: relative;
   min-height: 100%;
@@ -106,7 +106,6 @@ body {
 
           <div class="card-body">
             <form id="form">
-            <span>
               <h5>Drag and drop pixel art image</h5>
 
               <div class="mb-2">
@@ -131,6 +130,7 @@ body {
               <div class="mb-1">&nbsp;</div>
 
               <button class="btn btn-primary" id="doConvert" type="submit">Convert</button>
+            </form>
           </div>
         </div>
       </main>
@@ -162,7 +162,7 @@ body {
           </div>
           <div class="modal-body">
             <div class="d-flex">
-              <img id="canvas" />
+              <img id="canvas" alt=""/>
             </div>
           </div>
           <div class="modal-footer">
