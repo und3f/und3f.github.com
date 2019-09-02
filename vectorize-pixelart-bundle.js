@@ -57,7 +57,7 @@ fileElDD.addEventListener("dragleave", function( event ) {
     fileElDD.classList.remove("hover");
 }, false);
 
-fileEl.addEventListener("input", (e) => {
+fileEl.addEventListener("change", (e) => {
     setInputImageFile(fileEl.files[0]);
 });
 
