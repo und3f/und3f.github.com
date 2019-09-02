@@ -77,6 +77,7 @@ body {
 #inputImageDDDisplayer {
   width: 20em;
   max-height: 20em;
+  object-fit: contain;
   /* chromium */
   image-rendering: pixelated;
   /* firefox */
@@ -90,7 +91,8 @@ body {
 
 #canvas {
   width: 100%;
-  height: 100%;
+  max-height: 20em;
+  object-fit: contain;
 }
     </style>
     
@@ -110,7 +112,7 @@ body {
 
               <div class="mb-2">
                 <div id="inputImageDD">
-                  <img id="inputImageDDDisplayer" src="" />
+                  <img id="inputImageDDDisplayer" src="" alt=""/>
                 </div>
 
               </div>

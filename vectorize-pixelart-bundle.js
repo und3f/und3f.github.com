@@ -265,8 +265,9 @@ ContourTracing.prototype.addContour = function(contour, y, x, startDirection, en
 }
 
 ContourTracing.prototype.traceContour = function(y0, x0) {
-  const image = this.image;
-  const width = this.image.width;
+  const image   = this.image;
+  const width   = this.image.width;
+  const height  = this.image.height;
 
   let contour = [];
   // console.log("traceContour: ", y0, x0);
@@ -299,7 +300,7 @@ ContourTracing.prototype.traceContour = function(y0, x0) {
       let y = ylast + DIRECTIONS[newDirection][0];
       let x = xlast + DIRECTIONS[newDirection][1];
 
-      if (y < 0 || y >= width || x < 0 || x >= width)
+      if (y < 0 || y >= height || x < 0 || x >= width)
         continue;
 
       if (image.comparePixels(ylast, xlast, y, x)) {
