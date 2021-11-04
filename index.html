@@ -2,8 +2,6 @@
 <html>
   <head>
     <title>Sergii Zasenko</title>
-    <link href='http://fonts.googleapis.com/css?family=Poly'
-    rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css"
     href="style.css" media="screen">
     <meta name="author" content="Sergii Zasenko">
@@ -21,58 +19,67 @@
     <base target="_blank">
    </head>
    <body>
-     <div id="card">
-       <div id="head">
-         <h1>Sergii Zasenko</h1>
-         <div id="description">
-           software developer, musician, artist
-         </div>
-       </div>
+    <navbar id="navbar">
+      <div id="navbar-container">
+        <ul>
+          <li><a href="#welcome-section">Welcome</a></li>
+          <li><a href="#projects">Works</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </div>
+    </navbar>
 
+    <main id="main">
+      <section id="welcome-section">
+        <div class="container">
+          <h1>Sergii Zasenko</h1>
+          <p>software developer, painter</p>
+        </div>
+      </section>
 
-       <ul id="contacts">
-         <li>
-         <span class="contact-key">
-           email:
-         </span>
+      <section id="projects" class="projects-section">
+        <h2>Some of my projects</h2>
+        <div id="projects-grid">
+          <a href="https://codepen.io/szasenko/full/KKwQqWN" target="_blank" class="project project-tile">
+            <img src="https://res.cloudinary.com/zasenko-name/image/upload/v1630832508/Screenshot_2021-09-05_11-50-13_ajkyei.png" alt="project" />
+            <p class="project-title">
+              The N-Body Problem visualization
+            </p>
+          </a>
 
-         <span class="contact-data">
-           <a href="mailto:sergii@zasenko.name">sergii@zasenko.name</a>
-         </span>
+          <a href="http://zasenko.name/tone-game.html" target="_blank" class="project project-tile">
+            <img src="https://res.cloudinary.com/zasenko-name/image/upload/v1630833128/Untitled_r2uxzg.png" alt="project" />
+            <p class="project-title">
+              Art value training game
+            </p>
+          </a>
 
-         </li>
+          <a href="http://zasenko.name/vectorize-pixelart.html" target="_blank" class="project project-tile">
+            <img src="https://res.cloudinary.com/zasenko-name/image/upload/v1630833507/Screenshot_2021-09-05_at_12-17-06_Convert_raster_image_to_vector_zhtlqa.png" alt="project" />
+            <p class="project-title">
+              Vectorize pixelart
+            </p>
+          </a>
+        </div>
 
-          <li>
-            <span class="contact-key">
-              sound:
-            </span>
+        <a href="https://github.com/und3f" class="btn btn-show-all" target="_blank">Show all<i class="fas fa-chevron-right"></i></a>
 
-            <a href="https://soundcloud.com/und3f" class="contact-data">
-              SoundCloud Records
-            </a>
-          </li>
+      </section>
 
-         <li>
-           <span class="contact-key">
-               pictures:
-           </span>
- 
-           <a href="https://www.facebook.com/sergiizasenkoart/" class="contact-data">
-             Sergii Zasenko Art
-           </a>
-         </li>
+      <section id="contact">
+        <div class="header-subheader">
+          <h2>Always open for new opportunities</h2>
+          <p class="motto-description">
+            in any field
+          </p>
+        </div>
 
-         <li>
-           <span class="contact-key">
-             code:
-           </span>
-
-           <a href="https://github.com/und3f" class="contact-data">
-             GitHub projects
-           </a>
-         </li>
-
-       </ul>
-     </div>
+        <div class="contact-links">
+          <a id="profile-link" target="_blank" href="https://www.facebook.com/profile.php?id=100004352535538">Facebook</a>
+          <a id="profile-link" target="_blank" href="https://www.linkedin.com/in/serhii-zasenko/">LinkedIn</a>
+          <a id="profile-link" target="_blank" href="https://github.com/und3f/">GitHub</a>
+        </div>
+      </section>
+    </main>
    </body>
  </html>
