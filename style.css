@@ -159,6 +159,11 @@ section h2 {
   text-decoration: none;
 }
 
+.project .img-container {
+  flex: 1;
+  background-color: var(--background-dark)
+}
+
 .project img {
   width: 100%;
 }
@@ -171,6 +176,7 @@ section h2 {
 
 .project-title {
   font-size: 2rem;
+  height: 1.2em;
 }
 
 .btn {
