@@ -94,6 +94,17 @@ section h2 {
   padding-top: 0.3em;
 }
 
+.whole-page-section {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+
+  background-color: var(--background-dark);
+  color: var(--main-gray);
+  min-height: 100vh;
+}
+
 #welcome-section {
   display: flex;
   justify-content: center;
@@ -159,6 +170,11 @@ section h2 {
   text-decoration: none;
 }
 
+#img-container-voxel-game-screenshot img {
+  border-radius: 1%;
+  border: 1px solid white;
+}
+
 .project .img-container {
   flex: 1;
   background-color: var(--background-dark)
@@ -177,6 +193,16 @@ section h2 {
 .project-title {
   font-size: 2rem;
   height: 1.2em;
+}
+
+.project-desc {
+  color: var(--main-gray);
+  font-size: 1rem;
+  text-decoration: none;
+}
+
+.project:hover .project-desc{
+  text-decoration: underline;
 }
 
 .btn {
