@@ -192,7 +192,7 @@ section h2 {
 
 .project-title {
   font-size: 2rem;
-  height: 1.2em;
+  min-height: 1.2em;
 }
 
 .project-desc {
